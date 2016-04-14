@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (RayTracing)
 
-FIND_LIBRARY(OPENCV opencv)
+FIND_LIBRARY(OPENCV opencv_core)
 FIND_LIBRARY(OPENCV_GUI opencv_highgui)
 FIND_LIBRARY(OPENCV_IM opencv_imgproc)
 
