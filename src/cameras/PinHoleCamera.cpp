@@ -56,10 +56,13 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 				color /= count;
 			}
 
+			color = glm::min(color, 1.0f);
 			Vec3f &elem = result.at<Vec3f>(h, w);
 			elem[0] = color[2];
 			elem[1] = color[1];
 			elem[2] = color[0];
 		}
 	}
+
+	result.convertTo(result, CV_8UC3, 255.0);
 }

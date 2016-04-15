@@ -17,7 +17,7 @@ int main() {
 	unsigned char max_recursive = 4;
 
 	float radio = 4.0 / 3.0;
-	unsigned int width = 640;
+	unsigned int width = 1024;
 
 	float specular_power = 15;
 	float absorbance = 0.05;
@@ -37,7 +37,9 @@ int main() {
 
 	Mat result(width / radio, width, CV_32FC3);
 	camera.render(width, 2, result);
-	imwrite("Raytracing.jpeg", result);
+	// imshow("Raytracing", result);
+	// waitKey();
+	imwrite("Raytracing.jpg", result);
 	
 	return 0;
 }
