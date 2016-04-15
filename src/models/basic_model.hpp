@@ -3,8 +3,11 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/random.hpp>
 
 using namespace glm;
+
+#define MAX_MODEL_NUM 999999999
 
 class BasicModel {
 protected:
@@ -14,15 +17,19 @@ protected:
 	vec3 emissionColor;
 	bool emission;
 
-	float diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio;
+	float diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance;
+
+	unsigned long hash_code;
 
 public:
 	BasicModel(float diffuse, float specular, float specular_power, float reflection, float reflect_radio, float transparency,
-	           float refraction_radio,   const mat4 &model2world_matrix, bool emission, const vec3 &emissionColor, const vec4 &center):
+	           float refraction_radio, float absorbance, const mat4 &model2world_matrix, bool emission, const vec3 &emissionColor, const vec4 &center):
 		diffuse(diffuse), specular(specular), specular_power(specular_power), reflection(reflection), reflect_radio(reflect_radio),
-		transparency(transparency), refraction_radio(refraction_radio), model2world_matrix(model2world_matrix),
+		transparency(transparency), refraction_radio(refraction_radio), absorbance(absorbance), model2world_matrix(model2world_matrix),
 		world2model_matrix(inverse(model2world_matrix)), normal2world_matrix(inverseTranspose(model2world_matrix)), emission(emission),
-		emissionColor(emissionColor), center(center) {}
+		emissionColor(emissionColor), center(center) {
+		hash_code = linearRand(1, MAX_MODEL_NUM);
+	}
 
 	virtual ~BasicModel() {}
 
@@ -56,7 +63,7 @@ public:
 		return reflection;
 	}
 
-	inline float getReflectRadio() {
+	inline float getReflectRadio() const {
 		return reflect_radio;
 	}
 
@@ -64,8 +71,16 @@ public:
 		return transparency;
 	}
 
-	inline float getRefractionRadio() {
+	inline float getRefractionRadio() const {
 		return refraction_radio;
+	}
+
+	inline float getAbsorbance() const {
+		return absorbance;
+	}
+
+	inline unsigned long getHashCode() const {
+		return hash_code;
 	}
 };
 
