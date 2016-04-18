@@ -4,10 +4,14 @@
 
 #include "models/Sphere.hpp"
 #include "models/Plane.hpp"
+#include "models/Mesh.hpp"
 #include "cameras/PinHoleCamera.hpp"
 #include "scenes/scene.hpp"
 
 #include <glm/glm.hpp>
+
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 using namespace glm;
 using namespace std;
@@ -29,7 +33,9 @@ int main() {
 	scene.addModel(new Sphere(vec4(5.0, -1, -15, 1),	2, 		vec3(0.0, 1.0, 0.0),	0.0, 0.0, specular_power, 1.0, 0.1, 0.0,  0.0, absorbance));
 	scene.addModel(new Sphere(vec4(5.0, 0, -25, 1), 	3, 		vec3(0.0, 0.0, 1.0), 	0.5, 0.3, specular_power, 0.0, 0.0, 0.0,  0.0, absorbance));
 	scene.addModel(new Sphere(vec4(-5.5, 0, -15, 1), 	3, 		vec3(0.0, 1.0, 0.0), 	0.5, 0.3, specular_power, 0.0, 0.0, 0.0,  0.0, absorbance));
-	scene.addModel(new Plane (normalize(vec4(0,1,0,0)), -4, 80, vec3(0.2), 				1.0, 0.0, specular_power, 0.0, 0.0, 0.0,  0.0, absorbance));
+	scene.addModel(new Plane (normalize(vec4(0, 1, 0, 0)), -4, 80, vec3(0.2), 			1.0, 0.0, specular_power, 0.0, 0.0, 0.0,  0.0, absorbance));
+	vector<Triangle> tris; tris.push_back(Triangle(vec4(0, 0, -20, 1), vec4(-5, 5, -24, 1), vec4(5, 5, -24, 1), vec3(0, 1, 0)));
+	scene.addModel(new Mesh  (tris,														1.0, 0.0, specular_power, 0.0, 0.0, 0.0,  0.0, absorbance));
 
 	scene.addLight(new Sphere(vec3(3), vec4(0, 20, -30, 1), 3));
 
@@ -44,6 +50,6 @@ int main() {
 	// params.push_back(CV_IMWRITE_PNG_COMPRESSION);
 	// params.push_back(0);
 	// imwrite("Raytracing.png", result, params);
-	
+
 	return 0;
 }
