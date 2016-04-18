@@ -9,16 +9,16 @@ using namespace glm;
 
 class Sphere : public BasicModel {
 private:
-	vec3 surfaceColor;
+	vec3 surface_color;
 
 public:
-	Sphere(const vec4 &center, float radius, const vec3 &surfaceColor, float diffuse, float specular, float specular_power,
+	Sphere(const vec4 &center, float radius, const vec3 &surface_color, float diffuse, float specular, float specular_power,
 	       float reflection, float reflect_radio, float transparency, float refraction_radio, float absorbance):
 		BasicModel(diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance, model2world(center, radius),
-		           false, vec3(0.0f), vec4(vec3(0), 1)), surfaceColor(surfaceColor) {}
+		           false, vec3(0.0f), vec4(vec3(0), 1)), surface_color(surface_color) {}
 
 	Sphere(const vec3 &emissionColor, const vec4 &center, float radius):
-		BasicModel(0, 0, 0, 0, 0, 0, 0, 0, model2world(center, radius), true, emissionColor, vec4(vec3(0), 1)), surfaceColor(0) {}
+		BasicModel(0, 0, 0, 0, 0, 0, 0, 0, model2world(center, radius), true, emissionColor, vec4(vec3(0), 1)), surface_color(0) {}
 
 	bool intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const;
 

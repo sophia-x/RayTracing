@@ -1,8 +1,5 @@
 #include "basic_camera.hpp"
 
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-
 vec3 BasicCamera::raytracing(const vec4 &ray_position, const vec4 &ray_direction, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
 	min_t = numeric_limits<float>::max();
 	hash_code += recursive_count;
