@@ -20,7 +20,7 @@ bool Mesh::intersect(const vec4 &position, const vec4 &direction, float &t, vec4
 		return false;
 
 	t = length(model2world_matrix * (min_t * direction_model));
-	hit_normal = normalize(normal2world_matrix * hit_normal);
+	hit_normal = normalize(vec4(vec3(normal2world_matrix * hit_normal), 0));
 	hit_surface_color = color;
 	return true;
 }

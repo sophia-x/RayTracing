@@ -21,7 +21,7 @@ bool Sphere::intersect(const vec4 &position, const vec4 &direction, float &t, ve
 	float t1 = proj_len - dt;
 	t = t1 >= 0 ? t1 : proj_len + dt;
 
-	hit_normal = normalize(model2world_matrix * vec4(vec3(position_model + t * direction_model), 0.0f));
+	hit_normal = normalize(vec4(vec3(normal2world_matrix * vec4(vec3(position_model + t * direction_model), 0.0f)), 0));
 	hit_surface_color =  emission ? emissionColor : surface_color;
 	t = length(model2world_matrix * (t * direction_model));
 

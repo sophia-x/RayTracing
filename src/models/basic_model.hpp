@@ -27,9 +27,7 @@ public:
 		diffuse(diffuse), specular(specular), specular_power(specular_power), reflection(reflection), reflect_radio(reflect_radio),
 		transparency(transparency), refraction_radio(refraction_radio), absorbance(absorbance), model2world_matrix(model2world_matrix),
 		world2model_matrix(inverse(model2world_matrix)), normal2world_matrix(inverseTranspose(model2world_matrix)), emission(emission),
-		emissionColor(emissionColor), center(center) {
-		hash_code = linearRand(1, MAX_MODEL_NUM);
-	}
+		emissionColor(emissionColor), center(center), hash_code(linearRand(1, MAX_MODEL_NUM)) {}
 
 	virtual ~BasicModel() {}
 

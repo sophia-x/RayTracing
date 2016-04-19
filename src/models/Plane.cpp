@@ -20,7 +20,7 @@ bool Plane::intersect(const vec4 &position, const vec4 &direction, float &t, vec
 		return false;
 
 	t = length(model2world_matrix * (t * direction_model));
-	hit_normal = normal_world;
+	hit_normal = normalize(vec4(vec3(normal2world_matrix * vec4(0, 1, 0, 0)), 0));
 	hit_surface_color = surface_color;
 
 	return true;

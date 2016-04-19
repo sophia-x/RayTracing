@@ -11,13 +11,12 @@ using namespace glm;
 class Plane : public BasicModel {
 private:
 	vec3 surface_color;
-	vec4 normal_world;
 
 public:
 	Plane(const vec4 &normal, float loc, float side, const vec3 &surface_color, float diffuse, float specular, float specular_power,
 	      float reflection, float reflect_radio, float transparency, float refraction_radio, float absorbance):
 		BasicModel(diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance, model2world(normal, loc, side),
-		           false, vec3(0.0f), vec4(vec3(0), 1)), normal_world(normal), surface_color(surface_color) {}
+		           false, vec3(0.0f), vec4(vec3(0), 1)), surface_color(surface_color) {}
 
 	bool intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const;
 
