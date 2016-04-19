@@ -34,7 +34,7 @@ bool Cube::intersect(const vec4 &position, const vec4 &direction, float &t, vec4
 	return true;
 }
 
-float plane_intersect(const vec4 &position, const vec4 &direction, const vec4 &normal, float d, int idx1, int idx2) {
+float Cube::plane_intersect(const vec4 &position, const vec4 &direction, const vec4 &normal, float d, int idx1, int idx2) const {
 	float nd = dot(normal, direction);
 	if (abs(nd) <= numeric_limits<float>::epsilon())
 		return -1;

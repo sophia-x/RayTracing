@@ -23,8 +23,8 @@ private:
 	inline mat4 model2world(const vec4 &position, const vec3 &size) const {
 		return translate(mat4(1.0f), vec3(position)) * scale(mat4(1.0f), size);
 	}
-};
 
-float plane_intersect(const vec4 &position, const vec4 &direction, const vec4 &normal, float d, int idx1, int idx2);
+	float plane_intersect(const vec4 &position, const vec4 &direction, const vec4 &normal, float d, int idx1, int idx2) const;
+};
 
 #endif

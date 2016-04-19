@@ -1,7 +1,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
+#include <iostream>
 
 #include "PinHoleCamera.hpp"
+
+using namespace std;
 
 #define SIZE 4
 short DIR[2][SIZE] = {{ -1, 0, 1, -1}, { -1, -1, -1, 0}};
@@ -25,7 +28,10 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 	float dist;
 	vec4 world_position = camera2world_matrix * vec4(vec3(0.0f), 1.0f);
 	for (unsigned short w = 0; w < width; w ++) {
+		cout << endl;
 		for (unsigned short h = 0; h < height; h ++) {
+			cout << ".";
+
 			float x_pos = w * pixel_size - width_camera_half;
 			float y_pos = height_camera_half - h * pixel_size;
 

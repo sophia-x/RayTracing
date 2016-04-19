@@ -1,3 +1,7 @@
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include "Mesh.hpp"
 
 bool Mesh::intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const {
@@ -43,4 +47,21 @@ bool Triangle::intersect(const vec4 &position, const vec4 &direction, float &t, 
 	hit_normal = normal_model;
 	hit_surface_color = surface_color;
 	return true;
+}
+
+void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(file_name, 0);
+	const aiMesh* mesh = scene->mMeshes[0];
+
+	vector<vec4> vertices(mesh->mNumVertices);
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+		aiVector3D pos = mesh->mVertices[i];
+		vertices[i] = vec4(pos.x, pos.y, pos.z, 1.0);
+	}
+
+	tris.reserve(mesh->mNumFaces);
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+		tris.push_back(Triangle(vertices[mesh->mFaces[i].mIndices[0]], vertices[mesh->mFaces[i].mIndices[1]], vertices[mesh->mFaces[i].mIndices[2]], surface_color));
+	}
 }
