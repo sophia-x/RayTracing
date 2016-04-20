@@ -1,6 +1,7 @@
 #include <limits>
 
 #include "Plane.hpp"
+#include "../utils/intersect_tool.hpp"
 
 using namespace std;
 
@@ -9,14 +10,7 @@ bool Plane::intersect(const vec4 &position, const vec4 &direction, float &t, vec
 	vec4 direction_model = normalize(world2model_matrix * direction);
 	vec4 n(0, 1, 0, 0);
 
-	float dir_dot = dot(direction_model, n);
-	float uni_dir_dot = position_model[1] >= 0 ? -dir_dot : dir_dot;
-	if (uni_dir_dot <= numeric_limits<float>::epsilon())
-		return false;
-
-	t = abs(position_model[1]) / uni_dir_dot;
-	vec4 hit_pos = position_model + direction_model * t;
-	if (abs(hit_pos[0]) > 0.5 || abs(hit_pos[2]) > 0.5)
+	if (!plane_intersect(position_model, direction_model, n, 0, vec4(-0.5, 0.5, -0.5, 0.5), 0, 2, t))
 		return false;
 
 	t = length(model2world_matrix * (t * direction_model));

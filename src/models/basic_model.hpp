@@ -7,10 +7,10 @@
 
 using namespace glm;
 
-#define MAX_MODEL_NUM 999999999
-
 class BasicModel {
 protected:
+	static const int MAX_MODEL_NUM;
+
 	mat4 model2world_matrix, world2model_matrix, normal2world_matrix;
 	vec4 center;
 

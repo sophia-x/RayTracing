@@ -4,11 +4,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "basic_model.hpp"
+#include "../utils/Box.hpp"
 
 using namespace glm;
 
 class Cube : public BasicModel {
 private:
+	const static Box box;
+
 	vec3 surface_color;
 
 public:

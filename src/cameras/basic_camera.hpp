@@ -12,14 +12,13 @@ using namespace glm;
 using namespace std;
 using namespace cv;
 
-#define EPSILON 0.0001f
-
 class BasicCamera {
 protected:
 	vec4 position, direction, up;
 	float fov, radio, im_dist;
 
 	const Scene *scene_ptr;
+	static const float EPSILON;
 
 public:
 	BasicCamera(const vec4 &position, const vec4 &direction, const vec4 &up, float fov, float radio, float im_dist):

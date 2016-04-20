@@ -6,8 +6,8 @@
 
 using namespace std;
 
-#define SIZE 4
-short DIR[2][SIZE] = {{ -1, 0, 1, -1}, { -1, -1, -1, 0}};
+const size_t PinHoleCamera::SIZE = 4;
+const short PinHoleCamera::DIR[][2] = {{ -1, -1}, {0, -1}, {1, -1}, { -1, 0}};
 
 void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &result) const {
 	mat4 camera2world_matrix = inverse(lookAt(vec3(position), vec3(position + direction), vec3(up)));
@@ -28,10 +28,8 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 	float dist;
 	vec4 world_position = camera2world_matrix * vec4(vec3(0.0f), 1.0f);
 	for (unsigned short w = 0; w < width; w ++) {
-		cout << endl;
+		cout << "col " << w << " ......" << endl;
 		for (unsigned short h = 0; h < height; h ++) {
-			cout << ".";
-
 			float x_pos = w * pixel_size - width_camera_half;
 			float y_pos = height_camera_half - h * pixel_size;
 
@@ -40,8 +38,8 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 
 			bool same = true;
 			for (size_t i = 0; i < SIZE; i++) {
-				short p_h = (short)h + DIR[0][i];
-				short p_w = (short)w + DIR[1][i];
+				short p_h = (short)h + DIR[i][0];
+				short p_w = (short)w + DIR[i][1];
 
 				if (p_h >= 0 && p_h < height && p_w >= 0 && p_w < width && hash_code_mat(h, w) != hash_code_mat(p_h, p_w)) {
 					same = false;
