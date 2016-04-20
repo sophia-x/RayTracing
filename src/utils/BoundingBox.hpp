@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "Box.hpp"
-#include <iostream>
+
 using namespace std;
 
 template <class T>
@@ -20,6 +20,7 @@ private:
 public:
 	Node(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t threshold): left_ptr(0), right_ptr(0) {
 		size_t size = models.size();
+
 		vec3 min_p(numeric_limits<float>::max()), max_p(numeric_limits<float>::min());
 		for (size_t i = 0; i < size; i ++) {
 			min_p = glm::min(min_p, *min_ps[i]);
@@ -145,7 +146,7 @@ private:
 				right ++;
 		}
 
-		return abs(right - left);
+		return right + left - size;
 	}
 };
 
