@@ -18,6 +18,8 @@ private:
 	vector<float> ds;
 
 public:
+	Box() {}
+
 	Box(const vec3 &position, const vec3 &size): borders(CUBE_NUM), ds(CUBE_NUM) {
 		vec3 min_border = position - size / 2.0f;
 		vec3 max_border = position + size / 2.0f;

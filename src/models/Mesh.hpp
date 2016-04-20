@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "basic_model.hpp"
+#include "../utils/BoundingBox.hpp"
 
 using namespace glm;
 using namespace std;
@@ -19,19 +20,29 @@ public:
 	Triangle(const vec4 &a, const vec4 &b, const vec4 &c, const vec3 &surface_color): a(a), b(b), c(c), surface_color(surface_color),
 		normal_model(normalize(cross(vec3(a - b), vec3(b - c))), 0.0f) {}
 	bool intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const;
+
+	inline vec3 getMinPs() const {
+		return vec3(glm::min(a, glm::min(b, c)));
+	}
+
+	inline vec3 getMaxPs() const {
+		return vec3(glm::max(a, glm::max(b, c)));
+	}
 };
 
 class Mesh : public BasicModel {
 private:
 	vector<Triangle> tris;
 	vector<vec4> vertices;
+	BoundingBox<Triangle> bbox;
 
 public:
-	Mesh(const char *file_name, const vec3 &surface_color, float diffuse, float specular, float specular_power,
+	Mesh(const char *file_name, size_t threshold, const vec3 &surface_color, float diffuse, float specular, float specular_power,
 	     float reflection, float reflect_radio, float transparency, float refraction_radio, float absorbance):
 		BasicModel(diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance, mat4(1.0f),
 		           false, vec3(0.0f), vec4(vec3(0), 1)) {
 		loadObj(file_name, surface_color);
+		bbox = BoundingBox<Triangle>(tris, threshold);
 	}
 
 	bool intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const;
