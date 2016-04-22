@@ -7,21 +7,27 @@
 
 class BasicCamera {
 protected:
+	static const float IM_DIST;
+
 	vec3 position, direction, up;
-	float fov, radio, im_dist;
+	float fov, radio;
 
 	const Scene *scene_ptr;
 
 public:
-	BasicCamera(const vec3 &position, const vec3 &direction, const vec3 &up, float fov, float radio, float im_dist):
-		fov(fov), radio(radio), im_dist(im_dist), position(position), direction(direction), up(up) {}
+	BasicCamera(const vec3 &position, const vec3 &direction, const vec3 &up, float fov, float radio):
+		fov(fov), radio(radio), position(position), direction(direction), up(up), scene_ptr(0) {}
 
 	virtual ~BasicCamera() {}
 
-	virtual void render(unsigned short width, unsigned short anti_t, Mat &result) const = 0;
+	virtual void render(Mat &result, unsigned short anti_t) const = 0;
 
-	void setScene(const Scene *scene_p) {
+	inline void setScene(const Scene *scene_p) {
 		scene_ptr = scene_p;
+	}
+
+	inline size_t getHeight(size_t width) const {
+		return size_t(width / radio);
 	}
 
 protected:

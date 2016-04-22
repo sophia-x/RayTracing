@@ -11,9 +11,9 @@ private:
 
 public:
 	PinHoleCamera(const vec3 &position, const vec3 &direction, const vec3 &up,
-	              float fov, float radio, float im_dist): BasicCamera(position, direction, up, fov, radio, im_dist) {};
+	              float fov, float radio): BasicCamera(position, direction, up, fov, radio) {};
 
-	void render(unsigned short width, unsigned short anti_t, Mat &result) const;
+	void render(Mat &result, unsigned short anti_t) const;
 };
 
 #endif

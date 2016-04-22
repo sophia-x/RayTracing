@@ -11,10 +11,8 @@ private:
 	float d;
 
 public:
-	Plane(const vec3 &__normal, float d, const vec3 &surface_color, float diffuse, float specular, float specular_power,
-	      float reflection, float reflect_radio, float transparency, float refraction_radio, float absorbance):
-		BasicModel(diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance,
-		           false, vec3(0.0f), vec3(0)), surface_color(surface_color), normal(__normal), d(d) {
+	Plane(const vec3 &__normal, float d, const vec3 &surface_color, const Material &material):
+		BasicModel(material, false, vec3(0.0f), vec3(0)), surface_color(surface_color), normal(__normal), d(d) {
 		float len = length(normal);
 		normal /= len;
 		d /= len;

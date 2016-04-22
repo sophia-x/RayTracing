@@ -34,10 +34,8 @@ private:
 	BoundingBox<Triangle> bbox;
 
 public:
-	Mesh(const char *file_name, size_t threshold, const vec3 &surface_color, float diffuse, float specular, float specular_power,
-	     float reflection, float reflect_radio, float transparency, float refraction_radio, float absorbance):
-		BasicModel(diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance,
-		           false, vec3(0.0f), vec3(0)) {
+	Mesh(const char *file_name, size_t threshold, const vec3 &surface_color, const Material &material):
+		BasicModel(material, false, vec3(0.0f), vec3(0)) {
 		loadObj(file_name, surface_color);
 		bbox = BoundingBox<Triangle>(tris, threshold);
 	}

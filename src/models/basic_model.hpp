@@ -3,6 +3,7 @@
 
 #include <glm/gtc/random.hpp>
 
+#include "Material.hpp"
 #include "../common.hpp"
 
 class BasicModel {
@@ -13,15 +14,12 @@ protected:
 	vec3 emissionColor;
 	bool emission;
 
-	float diffuse, specular, specular_power, reflection, reflect_radio, transparency, refraction_radio, absorbance;
+	Material material;
 
 	unsigned long hash_code;
 
 public:
-	BasicModel(float diffuse, float specular, float specular_power, float reflection, float reflect_radio, float transparency,
-	           float refraction_radio, float absorbance, bool emission, const vec3 &emissionColor, const vec3 &center):
-		diffuse(diffuse), specular(specular), specular_power(specular_power), reflection(reflection), reflect_radio(reflect_radio),
-		transparency(transparency), refraction_radio(refraction_radio), absorbance(absorbance), emission(emission),
+	BasicModel(const Material &material, bool emission, const vec3 &emissionColor, const vec3 &center): material(material), emission(emission),
 		emissionColor(emissionColor), center(center), hash_code(linearRand(1, MAX_MODEL_NUM)) {}
 
 	virtual ~BasicModel() {}
@@ -41,35 +39,31 @@ public:
 	}
 
 	inline float getDiffuse() const {
-		return diffuse;
+		return material.diffuse;
 	}
 
 	inline float getSpecular() const {
-		return specular;
+		return material.specular;
 	}
 
 	inline float getSpecularPower() const {
-		return specular_power;
+		return material.specular_power;
 	}
 
 	inline float getReflection() const {
-		return reflection;
-	}
-
-	inline float getReflectRadio() const {
-		return reflect_radio;
+		return material.reflection;
 	}
 
 	inline float getTransparency() const {
-		return transparency;
+		return material.transparency;
 	}
 
 	inline float getRefractionRadio() const {
-		return refraction_radio;
+		return material.refraction_radio;
 	}
 
 	inline float getAbsorbance() const {
-		return absorbance;
+		return material.absorbance;
 	}
 
 	inline unsigned long getHashCode() const {

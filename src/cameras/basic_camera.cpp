@@ -1,5 +1,7 @@
 #include "basic_camera.hpp"
 
+const float BasicCamera::IM_DIST = 1.0f;
+
 vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
 	min_t = numeric_limits<float>::max();
 	hash_code += recursive_count;
