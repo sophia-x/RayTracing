@@ -2,18 +2,11 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "../common.hpp"
 #include "Mesh.hpp"
 
-bool Mesh::intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const {
-	vec4 position_model = world2model_matrix * position;
-	vec4 direction_model = normalize(world2model_matrix * direction);
-
-	if (!bbox.intersect(position_model, direction_model, t, hit_normal, hit_surface_color))
-		return false;
-
-	t = length(model2world_matrix * (t * direction_model));
-	hit_normal = normalize(vec4(vec3(normal2world_matrix * hit_normal), 0));
-	return true;
+bool Mesh::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
+	return bbox.intersect(position, direction, t, hit_normal, hit_surface_color);
 }
 
 void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
@@ -24,7 +17,7 @@ void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
 	vertices.reserve(mesh->mNumVertices);
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		aiVector3D pos = mesh->mVertices[i];
-		vertices.push_back(vec4(pos.x, pos.y, pos.z, 1.0));
+		vertices.push_back(vec3(pos.x, pos.y, pos.z));
 	}
 
 	tris.reserve(mesh->mNumFaces);
@@ -33,22 +26,21 @@ void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
 	}
 }
 
-bool Triangle::intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const {
-	vec3 e1 = vec3(a - b), e2 = vec3(a - c), s = vec3(a - position), d = vec3(direction);
-	float d12 = determinant(mat3(d, e1, e2));
-	if (abs(d12) < numeric_limits<float>::epsilon())
+bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
+	vec3 s = a - position;
+	float d12 = determinant(mat3(direction, e1, e2));
+	if (abs(d12) < EPSILON)
 		return false;
 
-	t = determinant(mat3(s, e1, e2));
+	t = determinant(mat3(s, e1, e2)) / d12;
 	if (t < 0)
 		return false;
 
-	float beta = determinant(mat3(d, s, e2)) / d12, gama = determinant(mat3(d, e1, s)) / d12;
+	float beta = determinant(mat3(direction, s, e2)) / d12, gama = determinant(mat3(direction, e1, s)) / d12;
 	if (beta < 0 || gama < 0 || beta > 1 || gama > 1 || beta + gama > 1)
 		return false;
 
-	t /= d12;
-	hit_normal = normal_model;
+	hit_normal = normal;
 	hit_surface_color = surface_color;
 	return true;
 }

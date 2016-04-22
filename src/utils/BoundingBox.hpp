@@ -81,14 +81,14 @@ public:
 		}
 	}
 
-	inline bool intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const {
+	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
 		int idx;
 		if (!box.intersect(position, direction, t, idx))
 			return false;
 
 		if (left_ptr != 0) {
 			float min_t = numeric_limits<float>::max();
-			vec4 tmp_n; vec3 tmp_color;
+			vec3 tmp_n; vec3 tmp_color;
 			bool hit = false;
 			if (left_ptr->intersect(position, direction, t, tmp_n, tmp_color)) {
 				hit = true;
@@ -110,7 +110,7 @@ public:
 		}
 
 		float min_t = numeric_limits<float>::max();
-		vec4 n; vec3 color;
+		vec3 n; vec3 color;
 		for (size_t i = 0; i < model_vec.size(); i++) {
 			if (!model_vec[i]->intersect(position, direction, t, n, color))
 				continue;
@@ -176,7 +176,7 @@ public:
 		root = shared_ptr<Node<T> >(new Node<T>(model_ptrs, min_ptrs, max_ptrs, threshold));
 	}
 
-	inline bool intersect(const vec4 &position, const vec4 &direction, float &t, vec4 &hit_normal, vec3 &hit_surface_color) const {
+	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
 		return root->intersect(position, direction, t, hit_normal, hit_surface_color);
 	}
 };

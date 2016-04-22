@@ -7,6 +7,6 @@
 using namespace glm;
 using namespace std;
 
-bool plane_intersect(const vec4 &position, const vec4 &direction, const vec4 &normal, float d, const vec4 &border, int idx1, int idx2, float &t);
+bool plane_intersect(const vec3 &position, const vec3 &direction, const vec3 &normal, float d, float &t);
 
 #endif

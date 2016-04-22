@@ -1,6 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
 #include <iostream>
+#include <chrono>
 
 #include "PinHoleCamera.hpp"
 
@@ -10,7 +11,7 @@ const size_t PinHoleCamera::SIZE = 4;
 const short PinHoleCamera::DIR[][2] = {{ -1, -1}, {0, -1}, {1, -1}, { -1, 0}};
 
 void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &result) const {
-	mat4 camera2world_matrix = inverse(lookAt(vec3(position), vec3(position + direction), vec3(up)));
+	mat4 camera2world_matrix = inverse(lookAt(position, position + direction, up));
 
 	float height_camera = 2 * tan(fov / 2) * im_dist;
 	float width_camera = radio * height_camera;
@@ -26,15 +27,17 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 	short half_anti = anti_t / 2;
 
 	float dist;
-	vec4 world_position = camera2world_matrix * vec4(vec3(0.0f), 1.0f);
+	vec3 world_position = vec3(camera2world_matrix * vec4(vec3(0.0f), 1.0f));
+
+	auto begin = chrono::system_clock::now();
+
 	for (unsigned short w = 0; w < width; w ++) {
-		cout << "col " << w << " ......" << endl;
 		for (unsigned short h = 0; h < height; h ++) {
 			float x_pos = w * pixel_size - width_camera_half;
 			float y_pos = height_camera_half - h * pixel_size;
 
-			vec4 ray_direction = vec4(x_pos, y_pos, -im_dist, 0);
-			vec3 color = raytracing(world_position, normalize(camera2world_matrix * ray_direction), 0, dist, hash_code_mat(h, w));
+			vec3 ray_direction(x_pos, y_pos, -im_dist);
+			vec3 color = raytracing(world_position, normalize(vec3(camera2world_matrix * vec4(ray_direction, 0))), 0, dist, hash_code_mat(h, w));
 
 			bool same = true;
 			for (size_t i = 0; i < SIZE; i++) {
@@ -54,7 +57,7 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 						if (x_idx == 0 && y_idx == 0)
 							continue;
 						count ++;
-						color += raytracing(world_position, normalize(camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -im_dist, 0)), 0, dist, hash_code_mat(h, w));
+						color += raytracing(world_position, normalize(vec3(camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -im_dist, 0))), 0, dist, hash_code_mat(h, w));
 					}
 				}
 				color /= count;
@@ -67,6 +70,10 @@ void PinHoleCamera::render(unsigned short width, unsigned short anti_t, Mat &res
 			elem[2] = color[0];
 		}
 	}
+
+	auto end = chrono::system_clock::now();
+	std::chrono::duration<double> dur = end - begin;
+	cout << dur.count() << " s" << endl;
 
 	result.convertTo(result, CV_8UC3, 255.0);
 }

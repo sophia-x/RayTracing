@@ -14,14 +14,13 @@ using namespace cv;
 
 class BasicCamera {
 protected:
-	vec4 position, direction, up;
+	vec3 position, direction, up;
 	float fov, radio, im_dist;
 
 	const Scene *scene_ptr;
-	static const float EPSILON;
 
 public:
-	BasicCamera(const vec4 &position, const vec4 &direction, const vec4 &up, float fov, float radio, float im_dist):
+	BasicCamera(const vec3 &position, const vec3 &direction, const vec3 &up, float fov, float radio, float im_dist):
 		fov(fov), radio(radio), im_dist(im_dist), position(position), direction(direction), up(up) {}
 
 	virtual ~BasicCamera() {}
@@ -33,7 +32,7 @@ public:
 	}
 
 protected:
-	vec3 raytracing(const vec4 &position, const vec4 &direction, unsigned short recusive_count, float &min_t, unsigned long &hash_code) const;
+	vec3 raytracing(const vec3 &position, const vec3 &direction, unsigned short recusive_count, float &min_t, unsigned long &hash_code) const;
 };
 
 #endif
