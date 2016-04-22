@@ -1,12 +1,9 @@
 #ifndef CUBE
 #define CUBE
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "basic_model.hpp"
+#include "../common.hpp"
 #include "../utils/Box.hpp"
-
-using namespace glm;
 
 class Cube : public BasicModel {
 private:

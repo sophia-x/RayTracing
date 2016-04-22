@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include "Sphere.hpp"
 
 bool Sphere::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {

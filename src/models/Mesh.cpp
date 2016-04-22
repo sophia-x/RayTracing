@@ -2,7 +2,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "../common.hpp"
 #include "Mesh.hpp"
 
 bool Mesh::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {

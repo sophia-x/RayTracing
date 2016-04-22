@@ -1,11 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
-#include <limits>
-#include <iostream>
 #include <chrono>
 
 #include "PinHoleCamera.hpp"
-
-using namespace std;
 
 const size_t PinHoleCamera::SIZE = 4;
 const short PinHoleCamera::DIR[][2] = {{ -1, -1}, {0, -1}, {1, -1}, { -1, 0}};

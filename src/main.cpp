@@ -1,6 +1,6 @@
-#include <vector>
 #include <opencv2/highgui/highgui.hpp>
-#include <glm/glm.hpp>
+
+#include "common.hpp"
 
 #include "models/Sphere.hpp"
 #include "models/Plane.hpp"
@@ -9,12 +9,6 @@
 
 #include "cameras/PinHoleCamera.hpp"
 #include "scenes/scene.hpp"
-
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-
-using namespace glm;
-using namespace std;
 
 int main() {
 	float radio = 4.0 / 3.0;

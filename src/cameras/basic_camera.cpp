@@ -1,4 +1,3 @@
-#include "../common.hpp"
 #include "basic_camera.hpp"
 
 vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {

@@ -1,16 +1,9 @@
 #ifndef BASIC_CAMERA
 #define BASIC_CAMERA
 
-#include <glm/glm.hpp>
-#include <vector>
-#include <opencv2/opencv.hpp>
-
+#include "../common.hpp"
 #include "../models/basic_model.hpp"
 #include "../scenes/scene.hpp"
-
-using namespace glm;
-using namespace std;
-using namespace cv;
 
 class BasicCamera {
 protected:

@@ -1,13 +1,11 @@
 #ifndef BOUNDING_BOX
 #define BOUNDING_BOX
 
-#include <limits>
 #include <algorithm>
 #include <memory>
 
 #include "Box.hpp"
-
-using namespace std;
+#include "../common.hpp"
 
 template <class T>
 class Node {

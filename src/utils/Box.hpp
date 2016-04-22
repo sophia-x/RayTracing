@@ -1,11 +1,7 @@
 #ifndef BOX
 #define BOX
 
-#include <glm/glm.hpp>
-#include <vector>
-
-using namespace glm;
-using namespace std;
+#include "../common.hpp"
 
 const static vec3 CUBE_NORMALS[] = {vec3(1, 0, 0), vec3(-1, 0, 0), vec3(0, 1, 0), vec3(0, -1, 0), vec3(0, 0, 1), vec3(0, 0, -1)};
 

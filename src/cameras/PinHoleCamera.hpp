@@ -2,6 +2,7 @@
 #define PIN_HOLE_CAMERA
 
 #include "basic_camera.hpp"
+#include "../common.hpp"
 
 class PinHoleCamera: public BasicCamera {
 private:

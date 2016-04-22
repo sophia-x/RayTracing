@@ -1,9 +1,5 @@
-#include <limits>
-
 #include "Box.hpp"
 #include "intersect_tool.hpp"
-
-using namespace std;
 
 const int Box::CUBE_NUM = 6;
 

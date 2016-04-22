@@ -1,10 +1,8 @@
 #ifndef SCENE
 #define SCENE
 
-#include <vector>
+#include "../common.hpp"
 #include "../models/basic_model.hpp"
-
-using namespace std;
 
 class Scene {
 private:

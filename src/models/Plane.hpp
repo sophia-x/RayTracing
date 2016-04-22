@@ -1,12 +1,8 @@
 #ifndef PLANE
 #define PLANE
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/vector_angle.hpp>
-
 #include "basic_model.hpp"
-
-using namespace glm;
+#include "../common.hpp"
 
 class Plane : public BasicModel {
 private:

@@ -1,11 +1,8 @@
 #ifndef SPHERE
 #define SPHERE
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "basic_model.hpp"
-
-using namespace glm;
+#include "../common.hpp"
 
 class Sphere : public BasicModel {
 private:

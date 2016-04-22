@@ -1,14 +1,9 @@
 #ifndef MESH
 #define MESH
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-
 #include "basic_model.hpp"
+#include "../common.hpp"
 #include "../utils/BoundingBox.hpp"
-
-using namespace glm;
-using namespace std;
 
 class Triangle {
 private:

@@ -1,9 +1,5 @@
-#include <limits>
-
 #include "Plane.hpp"
 #include "../utils/intersect_tool.hpp"
-
-using namespace std;
 
 bool Plane::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
 	if (!plane_intersect(position, direction, normal, d, t))

@@ -1,8 +1,4 @@
-#include <cmath>
-
 #include "Cube.hpp"
-
-using namespace std;
 
 bool Cube::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
 

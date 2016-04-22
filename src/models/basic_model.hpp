@@ -1,11 +1,9 @@
 #ifndef BASIC_MODEL
 #define BASIC_MODEL
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/random.hpp>
 
-using namespace glm;
+#include "../common.hpp"
 
 class BasicModel {
 protected:

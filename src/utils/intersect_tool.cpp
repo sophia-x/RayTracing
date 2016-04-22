@@ -1,7 +1,4 @@
 #include "intersect_tool.hpp"
-#include "../common.hpp"
-
-using namespace std;
 
 bool plane_intersect(const vec3 &position, const vec3 &direction, const vec3 &normal, float d, float &t) {
 	float nd = dot(normal, direction);
