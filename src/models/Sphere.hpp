@@ -17,7 +17,15 @@ public:
 	Sphere(const vec3 &emissionColor, const vec3 &center, float radius):
 		BasicModel(Material(), true, emissionColor, center), surface_color(0), center(center), radius(radius), radius_2(radius * radius) {}
 
-	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const;
+	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
+
+	inline vec3 getMinPs() const {
+		return center - vec3(radius);
+	}
+
+	inline vec3 getMaxPs() const {
+		return center + vec3(radius);
+	}
 };
 
 #endif

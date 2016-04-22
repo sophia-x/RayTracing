@@ -4,8 +4,10 @@
 
 #include "Mesh.hpp"
 
-bool Mesh::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
-	return bbox.intersect(position, direction, t, hit_normal, hit_surface_color);
+bool Mesh::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
+	BasicModel const* ptr;
+	hit_model = this;
+	return bbox.intersect(position, direction, t, hit_normal, hit_surface_color, ptr);
 }
 
 void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
@@ -25,7 +27,7 @@ void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
 	}
 }
 
-bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
+bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 	vec3 s = a - position;
 	float d12 = determinant(mat3(direction, e1, e2));
 	if (abs(d12) < EPSILON)
@@ -41,5 +43,6 @@ bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, 
 
 	hit_normal = normal;
 	hit_surface_color = surface_color;
+	hit_model = 0;
 	return true;
 }

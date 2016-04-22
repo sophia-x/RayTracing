@@ -79,7 +79,7 @@ public:
 		}
 	}
 
-	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
+	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 		int idx;
 		if (!box.intersect(position, direction, t, idx))
 			return false;
@@ -87,20 +87,23 @@ public:
 		if (left_ptr != 0) {
 			float min_t = numeric_limits<float>::max();
 			vec3 tmp_n; vec3 tmp_color;
+			BasicModel const* tmp_model;
 			bool hit = false;
-			if (left_ptr->intersect(position, direction, t, tmp_n, tmp_color)) {
+			if (left_ptr->intersect(position, direction, t, tmp_n, tmp_color, tmp_model)) {
 				hit = true;
 				min_t = t;
 				hit_normal = tmp_n;
 				hit_surface_color = tmp_color;
+				hit_model = tmp_model;
 			}
 
-			if (right_ptr->intersect(position, direction, t, tmp_n, tmp_color)) {
+			if (right_ptr->intersect(position, direction, t, tmp_n, tmp_color, tmp_model)) {
 				hit = true;
 				if (t < min_t) {
 					min_t = t;
 					hit_normal = tmp_n;
 					hit_surface_color = tmp_color;
+					hit_model = tmp_model;
 				}
 			}
 
@@ -109,13 +112,15 @@ public:
 
 		float min_t = numeric_limits<float>::max();
 		vec3 n; vec3 color;
+		BasicModel const* tmp_model;
 		for (size_t i = 0; i < model_vec.size(); i++) {
-			if (!model_vec[i]->intersect(position, direction, t, n, color))
+			if (!model_vec[i]->intersect(position, direction, t, n, color, tmp_model))
 				continue;
 			if (t < min_t) {
 				min_t = t;
 				hit_normal = n;
 				hit_surface_color = color;
+				hit_model = tmp_model;
 			}
 		}
 
@@ -126,6 +131,9 @@ public:
 		return true;
 	}
 
+	inline const Box& getBox() const {
+		return box;
+	}
 private:
 	inline int split(const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float & split_point, int &left, int &right) const {
 		size_t size = min_ps.size();
@@ -156,16 +164,16 @@ private:
 public:
 	BoundingBox(): root() {}
 
-	BoundingBox(vector<T> &models, size_t threshold) {
+	BoundingBox(vector<T *> &models, size_t threshold) {
 		size_t size = models.size();
 		vector<const T *> model_ptrs(size);
 		vector<vec3> min_ps(size); vector<vec3> max_ps(size);
 		vector<const vec3 *> min_ptrs(size); vector<const vec3 *> max_ptrs(size);
 
 		for (size_t i = 0; i < size; i ++) {
-			model_ptrs[i] = &models[i];
-			min_ps[i] = models[i].getMinPs();
-			max_ps[i] = models[i].getMaxPs();
+			model_ptrs[i] = models[i];
+			min_ps[i] = models[i]->getMinPs();
+			max_ps[i] = models[i]->getMaxPs();
 
 			min_ptrs[i] = &min_ps[i];
 			max_ptrs[i] = &max_ps[i];
@@ -174,8 +182,16 @@ public:
 		root = shared_ptr<Node<T> >(new Node<T>(model_ptrs, min_ptrs, max_ptrs, threshold));
 	}
 
-	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
-		return root->intersect(position, direction, t, hit_normal, hit_surface_color);
+	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
+		return root->intersect(position, direction, t, hit_normal, hit_surface_color, hit_model);
+	}
+
+	inline vec3 getMinPs() const {
+		return root->getBox().getMinPs();
+	}
+
+	inline vec3 getMaxPs() const {
+		return root->getBox().getMaxPs();
 	}
 };
 

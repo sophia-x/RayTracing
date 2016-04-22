@@ -12,10 +12,12 @@ private:
 	vector<vec3> cube_normals;
 	vector<float> ds;
 
+	vec3 position, size;
+
 public:
 	Box() {}
 
-	Box(const vec3 &position, const vec3 &size): ds(CUBE_NUM), cube_normals(CUBE_NUM) {
+	Box(const vec3 &position, const vec3 &size): position(position), size(size), ds(CUBE_NUM), cube_normals(CUBE_NUM) {
 		vec3 min_border = position - size / 2.0f;
 		vec3 max_border = position + size / 2.0f;
 
@@ -34,6 +36,14 @@ public:
 		return cube_normals[i];
 	}
 
+	inline vec3 getMinPs() const {
+		return position - size / 2.0f;
+	}
+
+	inline vec3 getMaxPs() const {
+		return position + size / 2.0f;
+	}
+	
 private:
 	void slab_intersect(const vec3 &position, const vec3 &direction, size_t p1, size_t p2, int &min_idx, int &max_idx, float &min_t, float &max_t) const;
 };
