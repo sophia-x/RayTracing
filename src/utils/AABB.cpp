@@ -1,5 +1,4 @@
 #include "AABB.hpp"
-#include "intersect_tool.hpp"
 
 const int AABB::CUBE_NUM = 6;
 
