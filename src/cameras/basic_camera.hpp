@@ -31,7 +31,7 @@ public:
 	}
 
 protected:
-	vec3 raytracing(const vec3 &position, const vec3 &direction, unsigned short recusive_count, float &min_t, unsigned long &hash_code) const;
+	vec3 raytracing(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, unsigned short recusive_count, float &min_t, unsigned long &hash_code) const;
 };
 
 #endif

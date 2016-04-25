@@ -4,10 +4,10 @@
 
 #include "Mesh.hpp"
 
-bool Mesh::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
+bool Mesh::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 	BasicModel const* ptr;
 	hit_model = this;
-	return bbox.intersect(position, direction, t, hit_normal, hit_surface_color, ptr);
+	return bbox.intersect(position, direction, inv_direction, t, hit_normal, hit_surface_color, ptr);
 }
 
 void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
@@ -27,7 +27,7 @@ void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
 	}
 }
 
-bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
+bool Triangle::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 	vec3 s = a - position;
 	float d12 = determinant(mat3(direction, e1, e2));
 	if (abs(d12) < EPSILON)
@@ -47,9 +47,10 @@ bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, 
 	return true;
 }
 
-bool Triangle::intersectBox(const Box &box) const {
-	vec3 min_ps = getMinPs(), max_ps = getMaxPs();
-	Box b((min_ps + max_ps) / 2.0f, max_ps - min_ps);
+bool Triangle::intersect(const AABB &box) const {
+	const vec3 &min_ps = getMinPs();
+	const vec3 &max_ps = getMaxPs();
+	AABB b((min_ps + max_ps) / 2.0f, max_ps - min_ps);
 
-	return box.intersectBox(b);
+	return box.intersect(b);
 }

@@ -1,6 +1,6 @@
 #include "Sphere.hpp"
 
-bool Sphere::intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
+bool Sphere::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 	vec3 position2center = center - position;
 	float proj_len = dot(position2center, direction);
 
@@ -22,7 +22,7 @@ bool Sphere::intersect(const vec3 &position, const vec3 &direction, float &t, ve
 	return true;
 }
 
-bool Sphere::intersectBox(const Box &box) const {
+bool Sphere::intersect(const AABB &box) const {
 	float dmin = 0;
 	vec3 min_ps = box.getMinPs(), max_ps = box.getMaxPs();
 

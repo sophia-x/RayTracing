@@ -2,7 +2,7 @@
 
 const float BasicCamera::IM_DIST = 1.0f;
 
-vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
+vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction, const vec3 &inv_direction, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
 	min_t = numeric_limits<float>::max();
 	hash_code += recursive_count;
 
@@ -21,7 +21,7 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 
 
 	for (vector<BasicModel *>::const_iterator it = models.begin(); it != models.end(); ++it) {
-		if ((*it)->intersect(ray_position, ray_direction, t, tmp_nomal, tmp_color, model_ptr_tmp)) {
+		if ((*it)->intersect(ray_position, ray_direction, inv_direction, t, tmp_nomal, tmp_color, model_ptr_tmp)) {
 			if (t < min_t) {
 				min_t = t;
 				model_ptr = model_ptr_tmp;
@@ -56,7 +56,7 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 			if ((*it) == (*model_it))
 				continue;
 
-			if ((*model_it)->intersect(hit_position + EPSILON * hit2light_dir, hit2light_dir, t, tmp_nomal, tmp_color, model_ptr_tmp) && t < len) {
+			if ((*model_it)->intersect(hit_position + EPSILON * hit2light_dir, hit2light_dir, 1.0f / hit2light_dir, t, tmp_nomal, tmp_color, model_ptr_tmp) && t < len) {
 				shade_color = 0;
 				break;
 			}
@@ -84,7 +84,7 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 	float reflection = model_ptr->getReflection();
 	float dist;
 	if (reflection > 0) {
-		color += reflection * raytracing(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir, recursive_count + 1, dist, hash_code) * surface_color;
+		color += reflection * raytracing(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir, 1.0f / reflect_ray_dir, recursive_count + 1, dist, hash_code) * surface_color;
 	}
 
 	bool outside = dot(normal, -ray_direction) > 0 ? true : false;
@@ -102,7 +102,7 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 
 		vec3 refract_dir = (r_index * ray_direction) + (r_index * cosI - sqrt( cosT2 )) * normal;
 
-		vec3 refract_color = raytracing(hit_position + EPSILON * refract_dir, refract_dir, recursive_count + 1, dist, hash_code);
+		vec3 refract_color = raytracing(hit_position + EPSILON * refract_dir, refract_dir, 1.0f / refract_dir, recursive_count + 1, dist, hash_code);
 		vec3 absorbance_color = glm::exp( surface_color * model_ptr->getAbsorbance() * -dist);
 		color += refract_color * absorbance_color;
 	}

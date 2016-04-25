@@ -16,9 +16,9 @@ public:
 	Triangle(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &surface_color): a(a), b(b), c(c), surface_color(surface_color),
 		normal(normalize(cross(a - b, b - c))), e1(a - b), e2(a - c) {}
 
-	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
+	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
-	bool intersectBox(const Box &box) const;
+	bool intersect(const AABB &box) const;
 
 	inline vec3 getMinPs() const {
 		return glm::min(a, glm::min(b, c));
@@ -61,10 +61,10 @@ public:
 		bbox = BoundingBox<Triangle>(tri_ptrs);
 	}
 
-	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
+	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
-	inline bool intersectBox(const Box &box) const {
-		return bbox.intersectBox(box);
+	inline bool intersect(const AABB &box) const {
+		return bbox.intersect(box);
 	}
 
 	inline vec3 getMinPs() const {

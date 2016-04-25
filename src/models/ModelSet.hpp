@@ -21,10 +21,10 @@ public:
 		}
 	}
 
-	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
+	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
-	inline bool intersectBox(const Box &box) const {
-		return bbox.intersectBox(box);
+	inline bool intersect(const AABB &box) const {
+		return bbox.intersect(box);
 	}
 
 	inline vec3 getMinPs() const {

@@ -13,7 +13,7 @@
 
 int main() {
 	float radio = 4.0 / 3.0;
-	size_t width = 320;
+	size_t width = 1280;
 
 	Scene scene(vec3(0), 5);
 

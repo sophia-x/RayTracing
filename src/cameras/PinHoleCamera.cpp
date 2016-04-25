@@ -32,7 +32,8 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t) const {
 			float y_pos = height_camera_half - h * pixel_size;
 
 			vec3 ray_direction(x_pos, y_pos, -IM_DIST);
-			vec3 color = raytracing(world_position, normalize(vec3(camera2world_matrix * vec4(ray_direction, 0))), 0, dist, hash_code_mat(h, w));
+			vec3 dir = normalize(vec3(camera2world_matrix * vec4(ray_direction, 0)));
+			vec3 color = raytracing(world_position, dir, 1.0f / dir, 0, dist, hash_code_mat(h, w));
 
 			bool same = true;
 			for (size_t i = 0; i < SIZE; i++) {
@@ -52,7 +53,8 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t) const {
 						if (x_idx == 0 && y_idx == 0)
 							continue;
 						count ++;
-						color += raytracing(world_position, normalize(vec3(camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -IM_DIST, 0))), 0, dist, hash_code_mat(h, w));
+						vec3 dir = normalize(vec3(camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -IM_DIST, 0)));
+						color += raytracing(world_position, dir, 1.0f / dir, 0, dist, hash_code_mat(h, w));
 					}
 				}
 				color /= count;
