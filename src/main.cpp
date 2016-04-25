@@ -5,7 +5,6 @@
 #include "models/Material.hpp"
 #include "models/Sphere.hpp"
 #include "models/Mesh.hpp"
-#include "models/Cube.hpp"
 #include "models/ModelSet.hpp"
 #include "models/model_util.hpp"
 
@@ -32,7 +31,7 @@ int main() {
 	models.push_back(new Sphere(vec3(2, 0.8, -3), 2.5, 				vec3(0.7, 0.7, 1.0), Material(0.0, 0.0, 00, 0.2, 0.8, 1.3, 0.15)));
 	models.push_back(new Sphere(vec3(-5.5, -0.5, -7), 2, 			vec3(0.7, 0.7, 1.0), Material(0.1, 0.0, 00, 0.5, 0.0, 1.3, 0.00)));
 	models.push_back(new Sphere(vec3(-1.5, -3.8, -1), 1.5, 			vec3(1.0, 0.4, 0.4), Material(0.1, 1.0, 20, 0.0, 0.3, 1.1, 0.15)));
-	models.push_back(new Cube(vec3(-2, 0.8, -3), vec3(1.5), 		vec3(0.0, 1.0, 0.0), Material(1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
+	models.push_back(Cube(vec3(-2, 0.8, -3), vec3(1.5), 			vec3(0.0, 1.0, 0.0), Material(1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
 	models.push_back(new Mesh("objs/cube.obj", 						vec3(1.0, 0.0, 0.0), Material(1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
 
 	for (int x = 0; x < 8; x++) {
