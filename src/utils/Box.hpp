@@ -17,7 +17,12 @@ private:
 public:
 	Box() {}
 
-	Box(const vec3 &position, const vec3 &size): position(position), size(size), ds(CUBE_NUM), cube_normals(CUBE_NUM) {
+	Box(const vec3 &position, const vec3 &__size): position(position), size(__size), ds(CUBE_NUM), cube_normals(CUBE_NUM) {
+		for(int i = 0;i < 3;i ++){
+			if(size[i] < EPSILON)
+				size[i] += EPSILON;
+		}
+
 		vec3 min_border = position - size / 2.0f;
 		vec3 max_border = position + size / 2.0f;
 

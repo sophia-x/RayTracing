@@ -8,7 +8,7 @@
 #include "../common.hpp"
 
 static const size_t MAX_DEPTH = 20;
-static const size_t SIZE = 1;
+static const size_t SIZE = 5;
 static const float COST_INTERSECT = 1.0f;
 static const float COST_TRAVEL = 0.3f;
 

@@ -47,6 +47,20 @@ public:
 		bbox = BoundingBox<Triangle>(tri_ptrs);
 	}
 
+	Mesh(const vector<vec3> &__vertices, const vector<int> &tri_idx, const vec3 &surface_color, const Material &material):
+		BasicModel(material, false, vec3(0), vec3(0)), vertices(__vertices) {
+
+		size_t size = tri_idx.size() / 3;
+		tris.reserve(size);
+		vector<Triangle *> tri_ptrs(size);
+
+		for (size_t i = 0; i < size; i++) {
+			tris.push_back(Triangle(vertices[tri_idx[3 * i]], vertices[tri_idx[3 * i + 1]], vertices[tri_idx[3 * i + 2]], surface_color));
+			tri_ptrs[i] = &tris[i];
+		}
+		bbox = BoundingBox<Triangle>(tri_ptrs);
+	}
+
 	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
 	inline bool intersectBox(const Box &box) const {
