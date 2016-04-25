@@ -19,6 +19,8 @@ public:
 
 	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
+	bool intersectBox(const Box &box) const;
+
 	inline vec3 getMinPs() const {
 		return center - vec3(radius);
 	}

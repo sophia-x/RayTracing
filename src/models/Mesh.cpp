@@ -46,3 +46,10 @@ bool Triangle::intersect(const vec3 &position, const vec3 &direction, float &t, 
 	hit_model = 0;
 	return true;
 }
+
+bool Triangle::intersectBox(const Box &box) const {
+	vec3 min_ps = getMinPs(), max_ps = getMaxPs();
+	Box b((min_ps + max_ps) / 2.0f, max_ps - min_ps);
+
+	return box.intersectBox(b);
+}

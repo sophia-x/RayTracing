@@ -1,11 +1,16 @@
 #ifndef BOUNDING_BOX
 #define BOUNDING_BOX
 
-#include <algorithm>
+#include <unordered_set>
 #include <memory>
 
 #include "Box.hpp"
 #include "../common.hpp"
+
+static const size_t MAX_DEPTH = 20;
+static const size_t SIZE = 1;
+static const float COST_INTERSECT = 1.0f;
+static const float COST_TRAVEL = 0.3f;
 
 template <class T>
 class Node {
@@ -16,7 +21,7 @@ private:
 	Box box;
 
 public:
-	Node(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t threshold): left_ptr(0), right_ptr(0) {
+	Node(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth): left_ptr(0), right_ptr(0) {
 		size_t size = models.size();
 
 		vec3 min_p(numeric_limits<float>::max()), max_p(numeric_limits<float>::min());
@@ -24,51 +29,58 @@ public:
 			min_p = glm::min(min_p, *min_ps[i]);
 			max_p = glm::max(max_p, *max_ps[i]);
 		}
-		box = Box((min_p + max_p) / 2.0f, max_p - min_p);
+		vec3 box_size = max_p - min_p;
+		box = Box((min_p + max_p) / 2.0f, box_size);
 
-		if (size <= threshold) {
+		bool leaf = true;
+		if (size > SIZE && depth < MAX_DEPTH) {
+			int axis = 0;
+			if (box_size[1] >= box_size[0] && box_size[1] >= box_size[2])
+				axis = 1;
+			if (box_size[2] >= box_size[0] && box_size[2] >= box_size[1])
+				axis = 2;
+
+			float split_point;
+			int left, right;
+
+			float score = split(models, min_ps, max_ps, axis, split_point, left, right);
+
+			if (score < size * COST_INTERSECT) {
+				leaf = false;
+
+				vector<const vec3 *> left_min_ps(left), right_min_ps(right), left_max_ps(left), right_max_ps(right);
+				vector<const T *> left_models(left), right_models(right);
+				int left_p = 0, right_p = 0;
+
+				Box left_box, right_box;
+				splitBox(left_box, right_box, split_point, axis);
+
+				for (size_t i = 0; i < size; i ++) {
+					if (models[i]->intersectBox(left_box)) {
+						left_min_ps[left_p] = min_ps[i];
+						left_max_ps[left_p] = max_ps[i];
+						left_models[left_p] = models[i];
+						left_p ++;
+					}
+
+					if (models[i]->intersectBox(right_box)) {
+						right_min_ps[right_p] = min_ps[i];
+						right_max_ps[right_p] = max_ps[i];
+						right_models[right_p] = models[i];
+						right_p ++;
+					}
+				}
+
+				left_ptr = new Node(left_models, left_min_ps, left_max_ps, depth + 1);
+				right_ptr = new Node(right_models, right_min_ps, right_max_ps, depth + 1);
+			}
+		}
+
+		if (leaf) {
 			model_vec.reserve(size);
 			for (size_t i = 0; i < size; i ++) {
 				model_vec.push_back(models[i]);
 			}
-		} else {
-			int min_diff = numeric_limits<int>::max();
-			int axis = -1; float split_point;
-			int left, right;
-			for (int i = 0; i < 3; i ++) {
-				float sp; int tmp_left, tmp_right;
-				int diff = split(min_ps, max_ps, i, sp, tmp_left, tmp_right);
-				if (diff < min_diff) {
-					min_diff = diff;
-					axis = i;
-					split_point = sp;
-					left = tmp_left;
-					right = tmp_right;
-				}
-			}
-
-			vector<const vec3 *> left_min_ps(left), right_min_ps(right), left_max_ps(left), right_max_ps(right);
-			vector<const T *> left_models(left), right_models(right);
-			int left_p = 0, right_p = 0;
-
-			for (size_t i = 0; i < size; i ++) {
-				if ((*min_ps[i])[axis] < split_point) {
-					left_min_ps[left_p] = min_ps[i];
-					left_max_ps[left_p] = max_ps[i];
-					left_models[left_p] = models[i];
-					left_p ++;
-				}
-
-				if ((*max_ps[i])[axis] > split_point) {
-					right_min_ps[right_p] = min_ps[i];
-					right_max_ps[right_p] = max_ps[i];
-					right_models[right_p] = models[i];
-					right_p ++;
-				}
-			}
-
-			left_ptr = new Node(left_models, left_min_ps, left_max_ps, threshold);
-			right_ptr = new Node(right_models, right_min_ps, right_max_ps, threshold);
 		}
 	}
 
@@ -135,24 +147,50 @@ public:
 		return box;
 	}
 private:
-	inline int split(const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float & split_point, int &left, int &right) const {
-		size_t size = min_ps.size();
-		vector<float> centers(size);
-		for (size_t i = 0; i < size; i ++)
-			centers[i] = ((*max_ps[i])[axis] + (*min_ps[i])[axis]) / 2.0f;
+	inline float split(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float & split_point, int &left, int &right) const {
+		unordered_set<float> splits;
+		for (size_t i = 0; i < min_ps.size(); i++) {
+			splits.insert((*min_ps[i])[axis]);
+			splits.insert((*max_ps[i])[axis]);
+		}
 
-		nth_element(centers.begin(), centers.begin() + size / 2, centers.end());
-		split_point = centers[size / 2];
+		float best_score = -1; int tmp_left, tmp_right;
+		for (auto it = splits.begin(); it != splits.end(); ++it ) {
+			float score = calculateScore(models, min_ps, max_ps, axis, *it, tmp_left, tmp_right);
+			if (score > best_score) {
+				best_score = score;
+				split_point = *it;
+				left = tmp_left;
+				right = tmp_right;
+			}
+		}
 
-		left = right = 0;
-		for (size_t i = 0; i < size; i ++) {
-			if ((*min_ps[i])[axis] < split_point)
+		return best_score;
+	}
+
+	inline float calculateScore(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float split_point, int &left, int &right) const {
+		Box left_box, right_box;
+		splitBox(left_box, right_box, split_point, axis);
+
+		left = 0, right = 0;
+		for (int i = 0; i < models.size(); i ++) {
+			if (models[i]->intersectBox(left_box))
 				left ++;
-			if ((*max_ps[i])[axis] > split_point)
+			if (models[i]->intersectBox(right_box))
 				right ++;
 		}
 
-		return right + left - size;
+		return COST_TRAVEL + COST_INTERSECT * (left_box.area() * left + right_box.area() * right) / box.area();
+	}
+
+	inline void splitBox(Box &left_box, Box &right_box, float split_point, int axis)const {
+		vec3 box_min_pos = box.getMinPs();
+		vec3 box_max_pos = box.getMaxPs();
+		vec3 left_max_pos = box_max_pos; left_max_pos[axis] = split_point;
+		vec3 right_min_pos = box_min_pos; right_min_pos[axis] = split_point;
+
+		left_box = Box((left_max_pos + box_min_pos) / 2.0f, left_max_pos - box_min_pos);
+		right_box = Box((box_max_pos + right_min_pos) / 2.0f, box_max_pos - right_min_pos);
 	}
 };
 
@@ -164,7 +202,7 @@ private:
 public:
 	BoundingBox(): root() {}
 
-	BoundingBox(vector<T *> &models, size_t threshold) {
+	BoundingBox(vector<T *> &models) {
 		size_t size = models.size();
 		vector<const T *> model_ptrs(size);
 		vector<vec3> min_ps(size); vector<vec3> max_ps(size);
@@ -179,11 +217,15 @@ public:
 			max_ptrs[i] = &max_ps[i];
 		}
 
-		root = shared_ptr<Node<T> >(new Node<T>(model_ptrs, min_ptrs, max_ptrs, threshold));
+		root = shared_ptr<Node<T> >(new Node<T>(model_ptrs, min_ptrs, max_ptrs, 0));
 	}
 
 	inline bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 		return root->intersect(position, direction, t, hit_normal, hit_surface_color, hit_model);
+	}
+
+	inline bool intersectBox(const Box &box) const {
+		return root->getBox().intersectBox(box);
 	}
 
 	inline vec3 getMinPs() const {

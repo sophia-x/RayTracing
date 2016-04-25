@@ -11,8 +11,8 @@ private:
 	BoundingBox<BasicModel> bbox;
 
 public:
-	ModelSet(const vector<BasicModel *> &__models, size_t threshold): BasicModel(Material(), false, vec3(0), vec3(0)), models(__models) {
-		bbox = BoundingBox<BasicModel>(models, threshold);
+	ModelSet(const vector<BasicModel *> &__models): BasicModel(Material(), false, vec3(0), vec3(0)), models(__models) {
+		bbox = BoundingBox<BasicModel>(models);
 	}
 
 	~ModelSet() {
@@ -22,6 +22,10 @@ public:
 	}
 
 	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
+
+	inline bool intersectBox(const Box &box) const {
+		return bbox.intersectBox(box);
+	}
 
 	inline vec3 getMinPs() const {
 		return bbox.getMinPs();

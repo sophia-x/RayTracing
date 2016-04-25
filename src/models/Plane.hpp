@@ -22,6 +22,13 @@ public:
 
 	bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
+	inline bool intersectBox(const Box &box) const {
+		vec3 min_ps = getMinPs();
+		vec3 max_ps = getMaxPs();
+		Box b ((max_ps + min_ps) / 2.0f, max_ps - min_ps);
+		return b.intersectBox(box);
+	}
+
 	inline vec3 getMinPs() const {
 		return vec3(-MAX);
 	}

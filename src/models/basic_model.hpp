@@ -5,6 +5,7 @@
 
 #include "Material.hpp"
 #include "../common.hpp"
+#include "../utils/Box.hpp"
 
 class BasicModel {
 protected:
@@ -25,6 +26,8 @@ public:
 	virtual ~BasicModel() {}
 
 	virtual bool intersect(const vec3 &position, const vec3 &direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const = 0;
+
+	virtual bool intersectBox(const Box &box) const = 0;
 
 	virtual inline vec3 getMinPs() const {
 		return vec3(0);

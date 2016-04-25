@@ -21,3 +21,14 @@ bool Sphere::intersect(const vec3 &position, const vec3 &direction, float &t, ve
 
 	return true;
 }
+
+bool Sphere::intersectBox(const Box &box) const {
+	float dmin = 0;
+	vec3 min_ps = box.getMinPs(), max_ps = box.getMaxPs();
+
+	for (int i = 0; i < 3; i++) {
+		if ( center[i] < min_ps[i] ) dmin += (center[i] - min_ps[i]) * (center[i] - min_ps[i]);
+		else if ( center[i] > max_ps[i] ) dmin += (center[i] - max_ps[i]) * (center[i] - max_ps[i]);
+	}
+	return dmin <= radius_2;
+}
