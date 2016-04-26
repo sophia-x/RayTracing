@@ -23,6 +23,8 @@ public:
 
 	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
 
+	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction,float len) const;
+
 	inline bool intersect(const AABB &box) const {
 		return bbox.intersect(box);
 	}

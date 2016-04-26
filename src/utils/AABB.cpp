@@ -2,27 +2,49 @@
 
 const int AABB::CUBE_NUM = 6;
 
-bool AABB::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction) const {
-	const vec3 &min_p = getMinPs();
-	const vec3 &max_p = getMaxPs();
+bool AABB::intersect(const vec3 &__position, const vec3 &direction, const vec3 &inv_direction, float &t_near, float &t_far) const {
+	float tmin, tmax, tymin, tymax, tzmin, tzmax;
 
-	float tx1 = (min_p[0] - position[0]) * inv_direction[0];
-	float tx2 = (max_p[0] - position[0]) * inv_direction[0];
+	if (inv_direction[0] > 0) {
+		tmin = (min_p[0] - __position[0]) * inv_direction[0];
+		tmax = (max_p[0] - __position[0]) * inv_direction[0];
+	} else {
+		tmin = (max_p[0] - __position[0]) * inv_direction[0];
+		tmax = (min_p[0] - __position[0]) * inv_direction[0];
+	}
 
-	float tmin = std::min(tx1, tx2);
-	float tmax = std::max(tx1, tx2);
+	if (inv_direction[1] > 0) {
+		tymin = (min_p[1] - __position[1]) * inv_direction[1];
+		tymax = (max_p[1] - __position[1]) * inv_direction[1];
+	} else {
+		tymin = (max_p[1] - __position[1]) * inv_direction[1];
+		tymax = (min_p[1] - __position[1]) * inv_direction[1];
+	}
 
-	float ty1 = (min_p[1] - position[1]) * inv_direction[1];
-	float ty2 = (max_p[1] - position[1]) * inv_direction[1];
+	if ((tmin > tymax) || (tymin > tmax))
+		return false;
+	if (tymin > tmin)
+		tmin = tymin;
+	if (tymax < tmax)
+		tmax = tymax;
 
-	tmin = std::max(tmin, std::min(ty1, ty2));
-	tmax = std::min(tmax, std::max(ty1, ty2));
+	if (inv_direction[2] > 0) {
+		tzmin = (min_p[2] - __position[2]) * inv_direction[2];
+		tzmax = (max_p[2] - __position[2]) * inv_direction[2];
+	} else {
+		tzmin = (max_p[2] - __position[2]) * inv_direction[2];
+		tzmax = (min_p[2] - __position[2]) * inv_direction[2];
+	}
 
-	float tz1 = (min_p[2] - position[2]) * inv_direction[2];
-	float tz2 = (max_p[2] - position[2]) * inv_direction[2];
+	if ((tmin > tzmax) || (tzmin > tmax))
+		return false;
+	if (tzmin > tmin)
+		tmin = tzmin;
+	if (tzmax < tmax)
+		tmax = tzmax;
 
-	tmin = std::max(tmin, std::min(tz1, tz2));
-	tmax = std::min(tmax, std::max(tz1, tz2));
+	t_near = tmin;
+	t_far = tmax;
 
-	return tmax >= tmin;
+	return true;
 }

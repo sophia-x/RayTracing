@@ -24,7 +24,7 @@ public:
 		max_p = position + half_size;
 	}
 
-	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction) const;
+	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t_near, float &t_far) const;
 
 	inline bool intersect(const AABB &box) const {
 		vec3 a_min = getMinPs(), b_min = box.getMinPs(), a_max = getMaxPs(), b_max = box.getMaxPs();

@@ -27,6 +27,12 @@ public:
 
 	virtual bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const = 0;
 
+	inline virtual bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const {
+		float t; vec3 normal, color;
+		BasicModel const* model;
+		return intersect(position, direction, inv_direction, t, normal, color, model) && t < len;
+	};
+
 	virtual bool intersect(const AABB &box) const = 0;
 
 	virtual inline vec3 getMinPs() const {

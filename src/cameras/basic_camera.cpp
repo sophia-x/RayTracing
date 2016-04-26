@@ -19,7 +19,6 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 	vec3 normal; vec3 surface_color;
 	vec3 tmp_nomal; vec3 tmp_color;
 
-
 	for (vector<BasicModel *>::const_iterator it = models.begin(); it != models.end(); ++it) {
 		if ((*it)->intersect(ray_position, ray_direction, inv_direction, t, tmp_nomal, tmp_color, model_ptr_tmp)) {
 			if (t < min_t) {
@@ -56,7 +55,7 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 			if ((*it) == (*model_it))
 				continue;
 
-			if ((*model_it)->intersect(hit_position + EPSILON * hit2light_dir, hit2light_dir, 1.0f / hit2light_dir, t, tmp_nomal, tmp_color, model_ptr_tmp) && t < len) {
+			if ((*model_it)->intersect(hit_position + EPSILON * hit2light_dir, hit2light_dir, 1.0f / hit2light_dir, len)) {
 				shade_color = 0;
 				break;
 			}

@@ -22,13 +22,35 @@ bool Sphere::intersect(const vec3 &position, const vec3 &direction, const vec3 &
 	return true;
 }
 
-bool Sphere::intersect(const AABB &box) const {
-	float dmin = 0;
-	vec3 min_ps = box.getMinPs(), max_ps = box.getMaxPs();
+bool Sphere::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const {
+	vec3 position2center = center - position;
+	float proj_len = dot(position2center, direction);
 
-	for (int i = 0; i < 3; i++) {
-		if ( center[i] < min_ps[i] ) dmin += (center[i] - min_ps[i]) * (center[i] - min_ps[i]);
-		else if ( center[i] > max_ps[i] ) dmin += (center[i] - max_ps[i]) * (center[i] - max_ps[i]);
+	if (proj_len <= 0)
+		return false;
+
+	float center2ray_2 = dot(position2center, position2center) - proj_len * proj_len;
+	if (center2ray_2 >= radius_2)
+		return false;
+
+	float dt = sqrt(radius_2 - center2ray_2);
+	float t1 = proj_len - dt;
+	float t = t1 >= 0 ? t1 : proj_len + dt;
+	return t < len;
+}
+
+bool Sphere::intersect(const AABB &box) const {
+	float d = 0;
+	const vec3 &min_p = box.getMinPs();
+	const vec3 &max_p = box.getMaxPs();
+
+	for (int i = 0; i < 3; i ++) {
+		if (center[i] < min_p[i]) {
+			d += (center[i] - min_p[i]) * (center[i] - min_p[i]);
+		} else if (center[i] > max_p[i]) {
+			d += (center[i] - max_p[i]) * (center[i] - max_p[i]);
+		}
 	}
-	return dmin <= radius_2;
+
+	return d <= radius_2;
 }

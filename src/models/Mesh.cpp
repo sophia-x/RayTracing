@@ -10,6 +10,10 @@ bool Mesh::intersect(const vec3 &position, const vec3 &direction, const vec3 &in
 	return bbox.intersect(position, direction, inv_direction, t, hit_normal, hit_surface_color, ptr);
 }
 
+bool Mesh::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const {
+	return bbox.intersect(position, direction, inv_direction, len);
+}
+
 void Mesh::loadObj(const char* file_name, const vec3 &surface_color) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(file_name, 0);
@@ -45,6 +49,23 @@ bool Triangle::intersect(const vec3 &position, const vec3 &direction, const vec3
 	hit_surface_color = surface_color;
 	hit_model = 0;
 	return true;
+}
+
+bool Triangle::intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const {
+	vec3 s = a - position;
+	float d12 = determinant(mat3(direction, e1, e2));
+	if (abs(d12) < EPSILON)
+		return false;
+
+	float t = determinant(mat3(s, e1, e2)) / d12;
+	if (t < 0)
+		return false;
+
+	float beta = determinant(mat3(direction, s, e2)) / d12, gama = determinant(mat3(direction, e1, s)) / d12;
+	if (beta < 0 || gama < 0 || beta > 1 || gama > 1 || beta + gama > 1)
+		return false;
+
+	return t < len;
 }
 
 bool Triangle::intersect(const AABB &box) const {

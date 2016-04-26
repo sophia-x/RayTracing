@@ -19,30 +19,26 @@ private:
 
 	vector<const T *> model_vec;
 	AABB box;
+	float split_point;
+	float axis;
 
 public:
-	Node(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth): left_ptr(0), right_ptr(0) {
+	Node(const AABB &aabb, const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth): left_ptr(0), right_ptr(0) {
 		size_t size = models.size();
+		box = aabb;
+		if (size == 0)
+			return;
 
-		vec3 min_p(numeric_limits<float>::max()), max_p(numeric_limits<float>::min());
-		for (size_t i = 0; i < size; i ++) {
-			min_p = glm::min(min_p, *min_ps[i]);
-			max_p = glm::max(max_p, *max_ps[i]);
-		}
-		vec3 box_size = max_p - min_p;
-		box = AABB((min_p + max_p) / 2.0f, box_size);
-
+		vec3 box_size = box.getSize();
 		bool leaf = true;
 		if (size > SIZE && depth < MAX_DEPTH) {
-			int axis = 0;
+			axis = 0;
 			if (box_size[1] >= box_size[0] && box_size[1] >= box_size[2])
 				axis = 1;
 			if (box_size[2] >= box_size[0] && box_size[2] >= box_size[1])
 				axis = 2;
 
-			float split_point;
 			int left, right;
-
 			float score = split(models, min_ps, max_ps, axis, split_point, left, right);
 
 			if (score < size * COST_INTERSECT) {
@@ -70,9 +66,8 @@ public:
 						right_p ++;
 					}
 				}
-
-				left_ptr = new Node(left_models, left_min_ps, left_max_ps, depth + 1);
-				right_ptr = new Node(right_models, right_min_ps, right_max_ps, depth + 1);
+				left_ptr = new Node(left_box, left_models, left_min_ps, left_max_ps, depth + 1);
+				right_ptr = new Node(right_box, right_models, right_min_ps, right_max_ps, depth + 1);
 			}
 		}
 
@@ -92,74 +87,137 @@ public:
 	}
 
 	inline bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
-		int idx;
-		if (!box.intersect(position, direction, inv_direction))
+		float t_near, t_far;
+		if (!box.intersect(position, direction, inv_direction, t_near, t_far))
 			return false;
 
+		float min_t = numeric_limits<float>::max(); vec3 tmp_n, tmp_color;
+		BasicModel const* tmp_model;
 		if (left_ptr != 0) {
-			float min_t = numeric_limits<float>::max();
-			vec3 tmp_n; vec3 tmp_color;
-			BasicModel const* tmp_model;
-			bool hit = false;
-			if (left_ptr->intersect(position, direction, inv_direction, t, tmp_n, tmp_color, tmp_model)) {
-				hit = true;
+			Node *near_ptr = 0;
+			Node *far_ptr = 0;
+
+			float entry_p = position[axis] + t_near * direction[axis];
+			float exit_p = position[axis] + t_far * direction[axis];
+
+			if (entry_p >= split_point && exit_p >= split_point) {
+				near_ptr = right_ptr;
+			}
+			if (exit_p <= split_point && entry_p <= split_point) {
+				near_ptr = left_ptr;
+			}
+			if (entry_p < split_point && exit_p > split_point) {
+				near_ptr = left_ptr;
+				far_ptr = right_ptr;
+			}
+			if (entry_p > split_point && exit_p <= split_point) {
+				near_ptr = right_ptr;
+				far_ptr = left_ptr;
+			}
+
+			bool hit = near_ptr->intersect(position, direction, inv_direction, t, tmp_n, tmp_color, tmp_model);
+			if (hit) {
 				min_t = t;
 				hit_normal = tmp_n;
 				hit_surface_color = tmp_color;
 				hit_model = tmp_model;
 			}
+			if (far_ptr == 0)
+				return hit;
 
-			if (right_ptr->intersect(position, direction, inv_direction, t, tmp_n, tmp_color, tmp_model)) {
-				hit = true;
+			if (far_ptr->intersect(position, direction, inv_direction, t, tmp_n, tmp_color, tmp_model)) {
 				if (t < min_t) {
 					min_t = t;
 					hit_normal = tmp_n;
 					hit_surface_color = tmp_color;
 					hit_model = tmp_model;
 				}
+				t = min_t;
+				return true;
+			} else {
+				t = min_t;
+				return hit;
 			}
-
-			return hit;
 		}
 
-		float min_t = numeric_limits<float>::max();
-		vec3 n; vec3 color;
-		BasicModel const* tmp_model;
+		min_t = numeric_limits<float>::max();
 		for (size_t i = 0; i < model_vec.size(); i++) {
-			if (!model_vec[i]->intersect(position, direction, inv_direction, t, n, color, tmp_model))
+			if (!model_vec[i]->intersect(position, direction, inv_direction, t, tmp_n, tmp_color, tmp_model))
 				continue;
 			if (t < min_t) {
 				min_t = t;
-				hit_normal = n;
-				hit_surface_color = color;
+				hit_normal = tmp_n;
+				hit_surface_color = tmp_color;
 				hit_model = tmp_model;
 			}
 		}
-
 		if (min_t == numeric_limits<float>::max())
 			return false;
-
 		t = min_t;
 		return true;
+	}
+
+	inline bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const {
+		float t_near, t_far;
+		if (!box.intersect(position, direction, inv_direction, t_near, t_far))
+			return false;
+		if (t_near >= len)
+			return false;
+
+		if (left_ptr != 0) {
+			float entry_p = position[axis] + t_near * direction[axis];
+			float exit_p = position[axis] + t_far * direction[axis];
+
+			Node *near_ptr = 0;
+			Node *far_ptr = 0;
+
+			if (entry_p >= split_point && exit_p >= split_point) {
+				near_ptr = right_ptr;
+			}
+			if (exit_p <= split_point && entry_p <= split_point) {
+				near_ptr = left_ptr;
+			}
+			if (entry_p < split_point && exit_p > split_point) {
+				near_ptr = left_ptr;
+				far_ptr = right_ptr;
+			}
+			if (entry_p > split_point && exit_p <= split_point) {
+				near_ptr = right_ptr;
+				far_ptr = left_ptr;
+			}
+
+			if (near_ptr->intersect(position, direction, inv_direction, len))
+				return true;
+			if (far_ptr != 0 && far_ptr->intersect(position, direction, inv_direction, len))
+				return true;
+			return false;
+		}
+
+		for (size_t i = 0; i < model_vec.size(); i++) {
+			if (model_vec[i]->intersect(position, direction, inv_direction, len))
+				return true;
+		}
+		return false;
 	}
 
 	inline const AABB& getBox() const {
 		return box;
 	}
+
 private:
-	inline float split(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float & split_point, int &left, int &right) const {
+	inline float split(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float & __split_point, int &left, int &right) const {
 		unordered_set<float> splits;
 		for (size_t i = 0; i < min_ps.size(); i++) {
 			splits.insert((*min_ps[i])[axis]);
 			splits.insert((*max_ps[i])[axis]);
 		}
 
-		float best_score = -1; int tmp_left, tmp_right;
+		float best_score = numeric_limits<float>::max(); int tmp_left, tmp_right;
 		for (auto it = splits.begin(); it != splits.end(); ++it ) {
 			float score = calculateScore(models, min_ps, max_ps, axis, *it, tmp_left, tmp_right);
-			if (score > best_score) {
+			if (score < best_score) {
 				best_score = score;
-				split_point = *it;
+				__split_point = *it;
 				left = tmp_left;
 				right = tmp_right;
 			}
@@ -168,9 +226,9 @@ private:
 		return best_score;
 	}
 
-	inline float calculateScore(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float split_point, int &left, int &right) const {
+	inline float calculateScore(const vector<const T *> &models, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int axis, float __split_point, int &left, int &right) const {
 		AABB left_box, right_box;
-		splitBox(left_box, right_box, split_point, axis);
+		splitBox(left_box, right_box, __split_point, axis);
 
 		left = 0, right = 0;
 		for (int i = 0; i < models.size(); i ++) {
@@ -183,11 +241,11 @@ private:
 		return COST_TRAVEL + COST_INTERSECT * (left_box.area() * left + right_box.area() * right) / box.area();
 	}
 
-	inline void splitBox(AABB &left_box, AABB &right_box, float split_point, int axis)const {
-		vec3 box_min_pos = box.getMinPs();
-		vec3 box_max_pos = box.getMaxPs();
-		vec3 left_max_pos = box_max_pos; left_max_pos[axis] = split_point;
-		vec3 right_min_pos = box_min_pos; right_min_pos[axis] = split_point;
+	inline void splitBox(AABB &left_box, AABB &right_box, float __split_point, int axis) const {
+		const vec3 &box_min_pos = box.getMinPs();
+		const vec3 &box_max_pos = box.getMaxPs();
+		vec3 left_max_pos = box_max_pos; left_max_pos[axis] = __split_point;
+		vec3 right_min_pos = box_min_pos; right_min_pos[axis] = __split_point;
 
 		left_box = AABB((left_max_pos + box_min_pos) / 2.0f, left_max_pos - box_min_pos);
 		right_box = AABB((box_max_pos + right_min_pos) / 2.0f, box_max_pos - right_min_pos);
@@ -217,11 +275,23 @@ public:
 			max_ptrs[i] = &max_ps[i];
 		}
 
-		root = shared_ptr<Node<T> >(new Node<T>(model_ptrs, min_ptrs, max_ptrs, 0));
+		vec3 min_p(numeric_limits<float>::max()), max_p(numeric_limits<float>::min());
+		for (size_t i = 0; i < size; i ++) {
+			min_p = glm::min(min_p, min_ps[i]);
+			max_p = glm::max(max_p, max_ps[i]);
+		}
+		vec3 box_size = max_p - min_p;
+		AABB box = AABB((min_p + max_p) / 2.0f, box_size);
+
+		root = shared_ptr<Node<T> >(new Node<T>(box, model_ptrs, min_ptrs, max_ptrs, 0));
 	}
 
 	inline bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const {
 		return root->intersect(position, direction, inv_direction, t, hit_normal, hit_surface_color, hit_model);
+	}
+
+	inline bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const {
+		return root->intersect(position, direction, inv_direction, len);
 	}
 
 	inline bool intersect(const AABB &box) const {
