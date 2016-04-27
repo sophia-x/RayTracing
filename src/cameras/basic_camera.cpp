@@ -2,24 +2,24 @@
 
 const float BasicCamera::IM_DIST = 1.0f;
 
-vec3 BasicCamera::raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
+vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, unsigned long &hash_code, Scene const* scene_ptr) {
 	min_t = numeric_limits<float>::max();
 
-	if (recursive_count > __scene_ptr->getMaxRecursive()) {
-		hash_code += recursive_count;
-		return vec3(0.0);
-	}
+	hash_code += recursive_count;
 
-	const vector<const Light *> &lights = __scene_ptr->getLights();
-	const vec3 &backgroud_color = __scene_ptr->getBackgroundColor();
+	if (recursive_count > scene_ptr->getMaxRecursive())
+		return vec3(0.0);
+
+	const vector<const Light *> &lights = scene_ptr->getLights();
+	const vec3 &backgroud_color = scene_ptr->getBackgroundColor();
 
 	Primitive const* hit_ptr = 0;
 	vec3 normal; vec3 surface_color;
 
-	if (!__scene_ptr->intersect(ray, min_t, normal, surface_color, hit_ptr))
+	if (!scene_ptr->intersect(ray, min_t, normal, surface_color, hit_ptr))
 		return backgroud_color;
 
-	hash_code += recursive_count * hit_ptr->getHashCode();
+	hash_code += hit_ptr->getHashCode();
 	const Material &material = hit_ptr->getMaterial();
 
 	if (material.isLight())
@@ -40,10 +40,10 @@ vec3 BasicCamera::raytracing(const Ray &ray, unsigned short recursive_count, flo
 		float len = length(hit2light);
 		vec3 hit2light_dir = hit2light / len;
 
-		if (__scene_ptr->intersect(Ray(hit_position + EPSILON * hit2light_dir, hit2light_dir), len, (*it)->getHashCode()))
+		if (scene_ptr->intersect(Ray(hit_position + EPSILON * hit2light_dir, hit2light_dir), len, (*it)->getHashCode()))
 			continue;
 
-		hash_code += (*it)->getHashCode() * recursive_count;
+		hash_code += (*it)->getHashCode();
 		if (diffuse > 0) {
 			float difuse_radio = dot(hit2light_dir, normal);
 			if (difuse_radio > 0) {
@@ -62,7 +62,7 @@ vec3 BasicCamera::raytracing(const Ray &ray, unsigned short recursive_count, flo
 	float reflection = material.getReflection();
 	float dist;
 	if (reflection > 0) {
-		color += reflection * raytracing(Ray(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir), recursive_count + 1, dist, hash_code) * surface_color;
+		color += reflection * raytracing(Ray(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir), recursive_count + 1, dist, hash_code, scene_ptr) * surface_color;
 	}
 
 	bool outside = dot(normal, -ray_direction) > 0 ? true : false;
@@ -80,7 +80,7 @@ vec3 BasicCamera::raytracing(const Ray &ray, unsigned short recursive_count, flo
 
 		vec3 refract_dir = (r_index * ray_direction) + (r_index * cosI - sqrt( cosT2 )) * normal;
 
-		vec3 refract_color = raytracing(Ray(hit_position + EPSILON * refract_dir, refract_dir), recursive_count + 1, dist, hash_code);
+		vec3 refract_color = raytracing(Ray(hit_position + EPSILON * refract_dir, refract_dir), recursive_count + 1, dist, hash_code, scene_ptr);
 		vec3 absorbance_color = glm::exp( surface_color * material.getAbsorbance() * -dist);
 		color += refract_color * absorbance_color;
 	}

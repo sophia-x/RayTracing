@@ -5,6 +5,8 @@
 #include "../common.hpp"
 #include "../scenes/scene.hpp"
 
+vec3 raytracing(const Ray &ray, unsigned short recusive_count, float &min_t, unsigned long &hash_code, Scene const* scene_ptr);
+
 class BasicCamera {
 protected:
 	static const float IM_DIST;
@@ -20,7 +22,7 @@ public:
 
 	virtual ~BasicCamera() {}
 
-	virtual void render(Mat &result, unsigned short anti_t) const = 0;
+	virtual void render(Mat &result, unsigned short anti_t, size_t thread_num) const = 0;
 
 	inline void setScene(const Scene *scene_ptr) {
 		__scene_ptr = scene_ptr;
@@ -29,9 +31,6 @@ public:
 	inline size_t getHeight(size_t width) const {
 		return size_t(width / __radio);
 	}
-
-protected:
-	vec3 raytracing(const Ray &ray, unsigned short recusive_count, float &min_t, unsigned long &hash_code) const;
 };
 
 #endif

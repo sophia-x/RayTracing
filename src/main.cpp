@@ -13,7 +13,7 @@
 
 int main() {
 	float radio = 4.0 / 3.0;
-	size_t width = 640;
+	size_t width = 800;
 
 	Scene scene(vec3(0), 5);
 
@@ -50,7 +50,7 @@ int main() {
 	camera.setScene(&scene);
 
 	Mat result(camera.getHeight(width), width, CV_32FC3);
-	camera.render(result, 1);
+	camera.render(result, 4);
 	imshow("Raytracing", result);
 	waitKey();
 
