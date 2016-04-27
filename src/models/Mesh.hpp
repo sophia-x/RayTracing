@@ -1,82 +1,35 @@
 #ifndef MESH
 #define MESH
 
-#include "basic_model.hpp"
+#include "Model.hpp"
+#include "Triangle.hpp"
 #include "../common.hpp"
-#include "../utils/BoundingBox.hpp"
 
-class Triangle {
+class Mesh : public Model {
 private:
-	const vec3 &a, &b, &c;
-	vec3 e1, e2;
-	vec3 normal;
-	const vec3 &surface_color;
-
-public:
-	Triangle(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &surface_color): a(a), b(b), c(c), surface_color(surface_color),
-		normal(normalize(cross(a - b, b - c))), e1(a - b), e2(a - c) {}
-
-	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
-
-	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const;
-
-	bool intersect(const AABB &box) const;
-
-	inline vec3 getMinPs() const {
-		return glm::min(a, glm::min(b, c));
-	}
-
-	inline vec3 getMaxPs() const {
-		return glm::max(a, glm::max(b, c));
-	}
-};
-
-class Mesh : public BasicModel {
-private:
-	vector<Triangle> tris;
-	vector<vec3> vertices;
-	BoundingBox<Triangle> bbox;
+	vector<Triangle> __tris;
+	vector<vec3> __vertices;
 
 public:
 	Mesh(const char *file_name, const vec3 &surface_color, const Material &material):
-		BasicModel(material, false, vec3(0.0f), vec3(0)) {
+		Model(material) {
 		loadObj(file_name, surface_color);
-
-		size_t size = tris.size();
-		vector<Triangle *> tri_ptrs(size);
-		for (size_t i = 0; i < size; i++)
-			tri_ptrs[i] = &tris[i];
-		bbox = BoundingBox<Triangle>(tri_ptrs);
 	}
 
-	Mesh(const vector<vec3> &__vertices, const vector<int> &tri_idx, const vec3 &surface_color, const Material &material):
-		BasicModel(material, false, vec3(0), vec3(0)), vertices(__vertices) {
+	Mesh(const vector<vec3> &vertices, const vector<int> &tri_idx, const vec3 &surface_color, const Material &material):
+		Model(material), __vertices(vertices) {
 
 		size_t size = tri_idx.size() / 3;
-		tris.reserve(size);
-		vector<Triangle *> tri_ptrs(size);
+		__tris.reserve(size);
 
 		for (size_t i = 0; i < size; i++) {
-			tris.push_back(Triangle(vertices[tri_idx[3 * i]], vertices[tri_idx[3 * i + 1]], vertices[tri_idx[3 * i + 2]], surface_color));
-			tri_ptrs[i] = &tris[i];
+			__tris.push_back(Triangle(__vertices[tri_idx[3 * i]], __vertices[tri_idx[3 * i + 1]], __vertices[tri_idx[3 * i + 2]], __hash_code, surface_color, __material));
 		}
-		bbox = BoundingBox<Triangle>(tri_ptrs);
 	}
 
-	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float &t, vec3 &hit_normal, vec3 &hit_surface_color, BasicModel const* &hit_model) const;
-
-	bool intersect(const vec3 &position, const vec3 &direction, const vec3 &inv_direction, float len) const;
-
-	inline bool intersect(const AABB &box) const {
-		return bbox.intersect(box);
-	}
-
-	inline vec3 getMinPs() const {
-		return bbox.getMinPs();
-	}
-
-	inline vec3 getMaxPs() const {
-		return bbox.getMaxPs();
+	inline void addPrimitives(vector<const Primitive *> &primitives) const {
+		for (size_t i = 0; i < __tris.size(); i++)
+			primitives.push_back(&(__tris[i]));
 	}
 private:
 	void loadObj(const char* file_name, const vec3 &surface_color);

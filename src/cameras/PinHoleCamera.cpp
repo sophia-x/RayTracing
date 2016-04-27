@@ -7,8 +7,8 @@ const size_t PinHoleCamera::SIZE = 4;
 const short PinHoleCamera::DIR[][2] = {{ -1, -1}, {0, -1}, {1, -1}, { -1, 0}};
 
 void PinHoleCamera::render(Mat &result, unsigned short anti_t) const {
-	float height_camera = 2 * tan(fov / 2) * IM_DIST;
-	float width_camera = radio * height_camera;
+	float height_camera = 2 * tan(__fov / 2) * IM_DIST;
+	float width_camera = __radio * height_camera;
 	float width_camera_half = width_camera / 2;
 	float height_camera_half = height_camera / 2;
 
@@ -20,12 +20,13 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t) const {
 	short half_anti = anti_t / 2;
 	float dist;
 
-	mat4 camera2world_matrix = inverse(lookAt(position, position + direction, up));
+	mat4 camera2world_matrix = inverse(lookAt(__position, __position + __direction, __up));
 	vec3 world_position = vec3(camera2world_matrix * vec4(vec3(0.0f), 1.0f));
 
 	Mat_<unsigned long> hash_code_mat(height, width, (unsigned long)0);
 
 	auto begin = chrono::system_clock::now();
+
 	for (unsigned short w = 0; w < width; w ++) {
 		for (unsigned short h = 0; h < height; h ++) {
 			float x_pos = w * pixel_size - width_camera_half;
@@ -33,7 +34,7 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t) const {
 
 			vec3 ray_direction(x_pos, y_pos, -IM_DIST);
 			vec3 dir = normalize(vec3(camera2world_matrix * vec4(ray_direction, 0)));
-			vec3 color = raytracing(world_position, dir, 1.0f / dir, 0, dist, hash_code_mat(h, w));
+			vec3 color = raytracing(Ray(world_position, dir), 0, dist, hash_code_mat(h, w));
 
 			bool same = true;
 			for (size_t i = 0; i < SIZE; i++) {
@@ -54,7 +55,7 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t) const {
 							continue;
 						count ++;
 						vec3 dir = normalize(vec3(camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -IM_DIST, 0)));
-						color += raytracing(world_position, dir, 1.0f / dir, 0, dist, hash_code_mat(h, w));
+						color += raytracing(Ray(world_position, dir), 0, dist, hash_code_mat(h, w));
 					}
 				}
 				color /= count;

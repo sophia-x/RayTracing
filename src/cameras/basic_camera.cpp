@@ -2,97 +2,76 @@
 
 const float BasicCamera::IM_DIST = 1.0f;
 
-vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction, const vec3 &inv_direction, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
+vec3 BasicCamera::raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, unsigned long &hash_code) const {
 	min_t = numeric_limits<float>::max();
-	hash_code += recursive_count;
 
-	if (recursive_count > scene_ptr->getMaxRecursive())
+	if (recursive_count > __scene_ptr->getMaxRecursive()) {
+		hash_code += recursive_count;
 		return vec3(0.0);
-
-	const vector<BasicModel*> &models = scene_ptr->getModels();
-	const vector<BasicModel*> &lights = scene_ptr->getLights();
-	const vec3 backgroud_color = scene_ptr->getBackgroundColor();
-
-	float t;
-	BasicModel const* model_ptr = 0;
-	BasicModel const* model_ptr_tmp = 0;
-	vec3 normal; vec3 surface_color;
-	vec3 tmp_nomal; vec3 tmp_color;
-
-	for (vector<BasicModel *>::const_iterator it = models.begin(); it != models.end(); ++it) {
-		if ((*it)->intersect(ray_position, ray_direction, inv_direction, t, tmp_nomal, tmp_color, model_ptr_tmp)) {
-			if (t < min_t) {
-				min_t = t;
-				model_ptr = model_ptr_tmp;
-				normal = tmp_nomal;
-				surface_color = tmp_color;
-			}
-		}
 	}
 
-	if (model_ptr == 0)
-		return backgroud_color;
-	hash_code += model_ptr->getHashCode();
+	const vector<const Light *> &lights = __scene_ptr->getLights();
+	const vec3 &backgroud_color = __scene_ptr->getBackgroundColor();
 
-	if (model_ptr->isLight())
-		return model_ptr->getEmissionColor();
+	Primitive const* hit_ptr = 0;
+	vec3 normal; vec3 surface_color;
+
+	if (!__scene_ptr->intersect(ray, min_t, normal, surface_color, hit_ptr))
+		return backgroud_color;
+
+	hash_code += recursive_count * hit_ptr->getHashCode();
+	const Material &material = hit_ptr->getMaterial();
+
+	if (material.isLight())
+		return hit_ptr->getSurfaceColor();
 
 	vec3 color(0);
-	float diffuse = model_ptr->getDiffuse();
-	float specular = model_ptr->getSpecular();
+	float diffuse = material.getDiffuse();
+	float specular = material.getSpecular();
 
+	const vec3 &ray_position = ray.getPosition();
+	const vec3 &ray_direction = ray.getDirection();
 	vec3 hit_position = ray_position + min_t * ray_direction;
 	vec3 reflect_ray_dir = reflect(ray_direction, normal);
 
-	for (vector<BasicModel *>::const_iterator it = lights.begin(); it != lights.end(); ++it) {
-		vec3 light_center = (*it)->getCenter();
+	for (auto it = lights.begin(); it != lights.end(); ++it) {
+		const vec3 &light_center = (*it)->getCenter();
 		vec3 hit2light = light_center - hit_position;
 		float len = length(hit2light);
 		vec3 hit2light_dir = hit2light / len;
 
-		float shade_color = 1.0;
-		for (vector<BasicModel *>::const_iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
-			if ((*it) == (*model_it))
-				continue;
-
-			if ((*model_it)->intersect(hit_position + EPSILON * hit2light_dir, hit2light_dir, 1.0f / hit2light_dir, len)) {
-				shade_color = 0;
-				break;
-			}
-		}
-
-		if (shade_color == 0)
+		if (__scene_ptr->intersect(Ray(hit_position + EPSILON * hit2light_dir, hit2light_dir), len, (*it)->getHashCode()))
 			continue;
 
-		hash_code += (*it)->getHashCode();
+		hash_code += (*it)->getHashCode() * recursive_count;
 		if (diffuse > 0) {
 			float difuse_radio = dot(hit2light_dir, normal);
 			if (difuse_radio > 0) {
-				color += shade_color * difuse_radio * surface_color * (*it)->getEmissionColor() * diffuse;
+				color += difuse_radio * surface_color * (*it)->getEmissionColor() * diffuse;
 			}
 		}
 
 		if (specular > 0) {
 			float specular_radio = dot(reflect_ray_dir, hit2light_dir);
 			if (specular_radio > 0) {
-				color += glm::pow(specular_radio, model_ptr->getSpecularPower()) * shade_color * (*it)->getEmissionColor() * specular;
+				color += glm::pow(specular_radio, material.getSpecularPower()) * (*it)->getEmissionColor() * specular;
 			}
 		}
 	}
 
-	float reflection = model_ptr->getReflection();
+	float reflection = material.getReflection();
 	float dist;
 	if (reflection > 0) {
-		color += reflection * raytracing(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir, 1.0f / reflect_ray_dir, recursive_count + 1, dist, hash_code) * surface_color;
+		color += reflection * raytracing(Ray(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir), recursive_count + 1, dist, hash_code) * surface_color;
 	}
 
 	bool outside = dot(normal, -ray_direction) > 0 ? true : false;
 	if (!outside) {
 		normal = -normal;
 	}
-	float transparency = model_ptr->getTransparency();
+	float transparency = material.getTransparency();
 	if (transparency > 0) {
-		float refraction_radio = model_ptr->getRefractionRadio();
+		float refraction_radio = material.getRefractionRadio();
 		float r_index = outside ? 1.0f / refraction_radio : refraction_radio;
 		float cosI = -dot( normal, ray_direction );
 		float cosT2 = 1.0f - r_index * r_index * (1.0f - cosI * cosI);
@@ -101,8 +80,8 @@ vec3 BasicCamera::raytracing(const vec3 &ray_position, const vec3 &ray_direction
 
 		vec3 refract_dir = (r_index * ray_direction) + (r_index * cosI - sqrt( cosT2 )) * normal;
 
-		vec3 refract_color = raytracing(hit_position + EPSILON * refract_dir, refract_dir, 1.0f / refract_dir, recursive_count + 1, dist, hash_code);
-		vec3 absorbance_color = glm::exp( surface_color * model_ptr->getAbsorbance() * -dist);
+		vec3 refract_color = raytracing(Ray(hit_position + EPSILON * refract_dir, refract_dir), recursive_count + 1, dist, hash_code);
+		vec3 absorbance_color = glm::exp( surface_color * material.getAbsorbance() * -dist);
 		color += refract_color * absorbance_color;
 	}
 
