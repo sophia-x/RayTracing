@@ -1,6 +1,4 @@
-#include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
-
 #include <thread>
 
 #include "PinHoleCamera.hpp"
@@ -8,27 +6,14 @@
 const size_t PinHoleCamera::SIZE = 8;
 const short PinHoleCamera::DIR[][2] = {{ -1, -1}, {0, -1}, {1, -1}, { -1, 0}, { -1, 1}, {1, 0,}, {0, 1}, {1, 1}};
 
-void thread_raytracing(const Ray &ray, vec3 *color, unsigned long *hash_code, Scene const* scene_ptr) {
-	float min_t;
-	*color = raytracing(ray, 0, min_t, *hash_code, scene_ptr);
-}
-
 void PinHoleCamera::render(Mat &result, unsigned short anti_t, size_t thread_num) const {
-	float height_camera = 2 * tan(__fov / 2) * IM_DIST;
-	float width_camera = __radio * height_camera;
-	float width_camera_half = width_camera / 2;
-	float height_camera_half = height_camera / 2;
-
 	Size s = result.size();
 	size_t width = s.width;
 	size_t height = s.height;
 
-	float pixel_size = width_camera / width;
+	float pixel_size = __width_camera / width;
 	short half_anti = anti_t / 2;
 	float dist;
-
-	mat4 camera2world_matrix = inverse(lookAt(__position, __position + __direction, __up));
-	vec3 world_position = vec3(camera2world_matrix * vec4(vec3(0.0f), 1.0f));
 
 	Mat_<unsigned long> hash_code_mat(height, width, (unsigned long)0);
 
@@ -41,12 +26,12 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t, size_t thread_num
 		for (unsigned short h = 0; h < height; h += thread_num) {
 			unsigned short num = std::min(thread_num, height - h);
 			for (unsigned short dh = 0; dh < num; dh++) {
-				float x_pos = w * pixel_size - width_camera_half;
-				float y_pos = height_camera_half - (h + dh) * pixel_size;
+				float x_pos = w * pixel_size - __width_camera_half;
+				float y_pos = __height_camera_half - (h + dh) * pixel_size;
 
 				vec3 ray_direction(x_pos, y_pos, -IM_DIST);
-				vec3 dir = normalize(vec3(camera2world_matrix * vec4(ray_direction, 0)));
-				t[dh] = thread(thread_raytracing, Ray(world_position, dir), &colors[dh], &hash_code_mat(h + dh, w), __scene_ptr);
+				vec3 dir = normalize(vec3(__camera2world_matrix * vec4(ray_direction, 0)));
+				t[dh] = thread(thread_raytracing, Ray(__world_position, dir), &colors[dh], &hash_code_mat(h + dh, w), __scene_ptr);
 			}
 
 			for (unsigned short dh = 0; dh < num; dh++)
@@ -82,13 +67,13 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t, size_t thread_num
 
 			if (!same) {
 				float count = 0;
-				float x_pos = w * pixel_size - width_camera_half;
-				float y_pos = height_camera_half - h * pixel_size;
+				float x_pos = w * pixel_size - __width_camera_half;
+				float y_pos = __height_camera_half - h * pixel_size;
 
 				for (short x_idx = -half_anti; x_idx <= half_anti; x_idx ++) {
 					for (short y_idx = -half_anti; y_idx <= half_anti; y_idx ++) {
-						vec3 dir = normalize(vec3(camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -IM_DIST, 0)));
-						t_anti[count] = thread(thread_raytracing, Ray(world_position, dir), &colors_anti[count], &hash_code, __scene_ptr);
+						vec3 dir = normalize(vec3(__camera2world_matrix * vec4( x_pos + x_idx * pixel_size / anti_t, y_pos + y_idx * pixel_size / anti_t, -IM_DIST, 0)));
+						t_anti[count] = thread(thread_raytracing, Ray(__world_position, dir), &colors_anti[count], &hash_code, __scene_ptr);
 						count ++;
 					}
 				}

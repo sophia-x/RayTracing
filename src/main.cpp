@@ -9,11 +9,12 @@
 #include "models/model_util.hpp"
 
 #include "cameras/PinHoleCamera.hpp"
+#include "cameras/DepthCamera.hpp"
 #include "scenes/scene.hpp"
 
 int main() {
 	float radio = 4.0 / 3.0;
-	size_t width = 800;
+	size_t width = 1024;
 
 	Scene scene(vec3(0), 5);
 
@@ -46,18 +47,20 @@ int main() {
 
 	scene.buildWorld();
 
-	PinHoleCamera camera(vec3(0, 0, 5), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
+	// PinHoleCamera camera(vec3(0, 0, 5), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
+	DepthCamera camera(vec3(0, 0, 5), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
 	camera.setScene(&scene);
 
 	Mat result(camera.getHeight(width), width, CV_32FC3);
-	camera.render(result, 4);
+	// camera.render(result, 1);
+	camera.render(result, 7, 12, 50, 4);
 	imshow("Raytracing", result);
 	waitKey();
 
-	// vector<int> params;
-	// params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-	// params.push_back(0);
-	// imwrite("Raytracing.png", result, params);
+	vector<int> params;
+	params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	params.push_back(0);
+	imwrite("Raytracing.png", result, params);
 
 	return 0;
 }
