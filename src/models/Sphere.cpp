@@ -14,15 +14,12 @@ float dt = sqrt(__radius_2 - center2ray_2);											\
 float t1 = proj_len - dt;															\
 t = t1 >= 0 ? t1 : proj_len + dt;
 
-bool Sphere::intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
+bool Sphere::intersect(const Ray &ray, float &t) const {
 	INTERSECT()
-
-	hit_normal = (position + t * direction - __center) / __radius;
-	hit_surface_color = __surface_color;
 	return true;
 }
 
-bool Sphere::intersect(const Ray &ray, float len) const {
+bool Sphere::intersect_seg(const Ray &ray, float len) const {
 	float t;
 	INTERSECT()
 
@@ -41,6 +38,6 @@ bool Sphere::intersect(const AABB &box) const {
 			d += (__center[i] - max_p[i]) * (__center[i] - max_p[i]);
 		}
 	}
-	
+
 	return d <= __radius_2;
 }

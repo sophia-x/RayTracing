@@ -1,18 +1,18 @@
 #include "model_util.hpp"
 
-Mesh *Plane(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &d, const vec3 &surface_color, const Material &material) {
+Mesh *Plane(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &d, const Material &material) {
 	vector<vec3> vertices = {a, b, c, d};
 	vector<int> tri_idx = {0, 1, 2, 2, 3, 0};
 
-	return new Mesh(vertices, tri_idx, surface_color, material);
+	return new Mesh(vertices, tri_idx, material);
 }
 
-Mesh *Plane(const vec3 &surface_color, const Material &material) {
-	return Plane(vec3(-1, 0, -1), vec3(-1, 0, 1), vec3(1, 0, 1), vec3(1, 0, -1), surface_color, material);
+Mesh *Plane(const Material &material) {
+	return Plane(vec3(-1, 0, -1), vec3(-1, 0, 1), vec3(1, 0, 1), vec3(1, 0, -1), material);
 }
 
 
-Mesh *Cube(const vec3 &pos, const vec3 &size, const vec3 &surface_color, const Material &material) {
+Mesh *Cube(const vec3 &pos, const vec3 &size, const Material &material) {
 	vec3 half_size = size / 2.0f;
 
 	vec3 a(pos[0] - half_size[0], pos[1] + half_size[1], pos[2] - half_size[2]);
@@ -34,9 +34,9 @@ Mesh *Cube(const vec3 &pos, const vec3 &size, const vec3 &surface_color, const M
 	                        0, 4, 7, 7, 3, 0
 	                      };
 
-	return new Mesh(vertices, tri_idx, surface_color, material);
+	return new Mesh(vertices, tri_idx, material);
 }
 
-Mesh *Cube(const vec3 &surface_color, const Material &material) {
-	return Cube(vec3(0), vec3(1), surface_color, material);
+Mesh *Cube(const Material &material) {
+	return Cube(vec3(0), vec3(1), material);
 }

@@ -3,6 +3,7 @@
 
 #include "../common.hpp"
 #include "../models/Model.hpp"
+#include "../models/Texture.hpp"
 #include "../models/Light.hpp"
 #include "../models/Primitive.hpp"
 #include "../utils/KD_Tree.hpp"
@@ -12,6 +13,7 @@ private:
 	vector<const Primitive *> __primitives;
 	vector<const Model *> __models;
 	vector<const Light *> __lights;
+	vector<const Texture *> __textures;
 	vec3 __backgroud_color;
 	unsigned char __max_recursive;
 
@@ -24,10 +26,14 @@ public:
 		for (auto it = __models.begin(); it != __models.end(); ++it) {
 			delete (*it);
 		}
+
+		for (auto it = __textures.begin(); it != __textures.end(); ++it) {
+			delete (*it);
+		}
 	}
 
-	inline bool intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color, Primitive const* &hit_ptr) const {
-		return __tree.intersect(ray, t, hit_normal, hit_surface_color, hit_ptr);
+	inline bool intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const {
+		return __tree.intersect(ray, t, hit_ptr);
 	}
 
 	inline bool intersect(const Ray &ray, float len, unsigned long hash_code) const {
@@ -46,6 +52,10 @@ public:
 	inline void addLight(Light *light) {
 		__lights.push_back(light);
 		addModel(light);
+	}
+
+	inline void addTexture(Texture *texture) {
+		__textures.push_back(texture);
 	}
 
 	inline const vector<const Light *>& getLights() const {

@@ -18,12 +18,12 @@ protected:
 	vec3 __a, __b, __c, __d;
 
 public:
-	AreaLight(const vec3 &position, float width, float height, const vec3 &surface_color): Light(Material(true), surface_color),
+	AreaLight(const vec3 &position, float width, float height, const vec3 &emission_color): Light(Material(emission_color, true), emission_color),
 		__width(width), __height(height), __position(position), __a(position + vec3(-width / 2, 0, height / 2)),
 		__b(position + vec3(width / 2, 0, height / 2)), __c(position + vec3(width / 2, 0, -height / 2)),
 		__d(position + vec3(-width / 2, 0, -height / 2)),
-		__tri_a(__a, __b, __c, __hash_code, __surface_color, __material),
-		__tri_b(__c, __d, __a, __hash_code, __surface_color, __material),
+		__tri_a(__a, __b, __c, __hash_code, __material),
+		__tri_b(__c, __d, __a, __hash_code, __material),
 		__min_p(position - vec3(width, 0, height)) {}
 
 	inline float calcShade(const Scene *scene_ptr, const vec3 &hit_position, const vec3 &normal, const vec3 &reflect_ray_dir, const Material &material, const vec3 &surface_color, vec3 &color) const {

@@ -13,6 +13,8 @@ using namespace glm;
 using namespace std;
 using namespace cv;
 
+const static float PI = 3.141592653589793238462f;
+
 const static float EPSILON = 0.0001;
 const static float REFLACT_EPSILON = 0.00001;
 

@@ -26,18 +26,12 @@ float inv_det = 1.0 / det;							\
 t = dot(__e2, qvec) * inv_det;						\
 if(t < 0) return false;								\
 
-bool Triangle::intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const {
+bool Triangle::intersect(const Ray &ray, float &t) const {
 	INTERSECT()
-
-	hit_normal = __normal;
-	hit_surface_color = __surface_color;
-	// u *= inv_det;
-	// v *= inv_det;
-
 	return true;
 }
 
-bool Triangle::intersect(const Ray &ray, float len) const {
+bool Triangle::intersect_seg(const Ray &ray, float len) const {
 	float t;
 	INTERSECT()
 

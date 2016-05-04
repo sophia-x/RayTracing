@@ -31,7 +31,7 @@ public:
 		}
 	}
 
-	bool intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color, Primitive const* &hit_ptr) const;
+	bool intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const;
 
 	bool intersect(const Ray &ray, float len, unsigned long hash_code) const;
 
@@ -76,8 +76,8 @@ public:
 		__root = shared_ptr<Node>(new Node(box, model_ptrs, min_ptrs, max_ptrs, 0));
 	}
 
-	inline bool intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color, Primitive const* &hit_ptr) const {
-		return __root->intersect(ray, t, hit_normal, hit_surface_color, hit_ptr);
+	inline bool intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const {
+		return __root->intersect(ray, t, hit_ptr);
 	}
 
 	inline bool intersect(const Ray &ray, float len, unsigned long hash_code) const {

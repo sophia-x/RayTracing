@@ -10,8 +10,8 @@ protected:
 	Sphere __sphere;
 
 public:
-	SphereModel(const vec3 &center, float radius, const vec3 &surface_color, const Material &material):
-		Model(material, surface_color), __sphere(center, radius, __hash_code, __surface_color, __material) {}
+	SphereModel(const vec3 &center, float radius, const Material &material):
+		Model(material), __sphere(center, radius, __hash_code, __material) {}
 
 	virtual ~SphereModel() {}
 

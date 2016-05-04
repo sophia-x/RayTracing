@@ -13,14 +13,22 @@ private:
 	vec3 __normal;
 
 public:
-	Triangle(const vec3 &a, const vec3 &b, const vec3 &c, unsigned long hash_code, const vec3 &surface_color, const Material &material):
-		Primitive(hash_code, material, surface_color), __a(a), __b(b), __c(c), __e1(b - a), __e2(c - a), __normal(normalize(cross(a - b, b - c))) {}
+	Triangle(const vec3 &a, const vec3 &b, const vec3 &c, unsigned long hash_code, const Material &material):
+		Primitive(hash_code, material), __a(a), __b(b), __c(c), __e1(b - a), __e2(c - a), __normal(normalize(cross(a - b, b - c))) {}
 
-	bool intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color) const;
+	bool intersect(const Ray &ray, float &t) const;
 
-	bool intersect(const Ray &ray, float len) const;
+	bool intersect_seg(const Ray &ray, float len) const;
 
 	bool intersect(const AABB &box) const;
+
+	inline vec3 getNormal(const vec3 &hit_position) const {
+		return __normal;
+	}
+
+	inline vec3 getColor(const vec3 &hit_position) const {
+		return __material.getColor();
+	}
 
 	inline vec3 getMinP() const {
 		return glm::min(__a, glm::min(__b, __c));

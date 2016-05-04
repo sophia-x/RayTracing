@@ -58,14 +58,13 @@ Node::Node(const AABB &box, const vector<const Primitive *> &primitives, const v
 	}
 }
 
-bool Node::intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surface_color, Primitive const* &hit_ptr) const {
+bool Node::intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const {
 	float t_near, t_far;
 	if (!__box.intersect(ray, t_near, t_far)) {
 		return false;
 	}
 
 	float tmp_t;
-	vec3 tmp_n, tmp_color;
 	Primitive const* tmp_ptr;
 
 	if (__left_ptr != 0) {
@@ -78,23 +77,19 @@ bool Node::intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surfa
 			return false;
 
 		t = numeric_limits<float>::max();
-		bool hit = near_ptr->intersect(ray, tmp_t, tmp_n, tmp_color, tmp_ptr);
+		bool hit = near_ptr->intersect(ray, tmp_t, tmp_ptr);
 
 		if (hit) {
 			t = tmp_t;
-			hit_normal = tmp_n;
-			hit_surface_color = tmp_color;
 			hit_ptr = tmp_ptr;
 		}
 
 		if (far_ptr == 0)
 			return hit;
 
-		if (far_ptr->intersect(ray, tmp_t, tmp_n, tmp_color, tmp_ptr)) {
+		if (far_ptr->intersect(ray, tmp_t, tmp_ptr)) {
 			if (tmp_t < t) {
 				t = tmp_t;
-				hit_normal = tmp_n;
-				hit_surface_color = tmp_color;
 				hit_ptr = tmp_ptr;
 			}
 			return true;
@@ -105,12 +100,10 @@ bool Node::intersect(const Ray &ray, float &t, vec3 &hit_normal, vec3 &hit_surfa
 
 	t = numeric_limits<float>::max();
 	for (size_t i = 0; i < __primitives.size(); i++) {
-		if (!__primitives[i]->intersect(ray, tmp_t, tmp_n, tmp_color))
+		if (!__primitives[i]->intersect(ray, tmp_t))
 			continue;
 		if (tmp_t < t) {
 			t = tmp_t;
-			hit_normal = tmp_n;
-			hit_surface_color = tmp_color;
 			hit_ptr = __primitives[i];
 		}
 	}
@@ -142,7 +135,7 @@ bool Node::intersect(const Ray &ray, float len, unsigned long hash_code) const {
 		if (__primitives[i]->getHashCode() == hash_code)
 			continue;
 
-		if (__primitives[i]->intersect(ray, len)) {
+		if (__primitives[i]->intersect_seg(ray, len)) {
 			return true;
 		}
 	}

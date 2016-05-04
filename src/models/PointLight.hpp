@@ -12,8 +12,8 @@ protected:
 	Sphere __sphere;
 
 public:
-	PointLight(const vec3 &center, float radius, const vec3 &surface_color): Light(Material(true), surface_color),
-		__sphere(center, radius, __hash_code, __surface_color, __material) {}
+	PointLight(const vec3 &center, float radius, const vec3 &emission_color): Light(Material(emission_color, true), emission_color),
+		__sphere(center, radius, __hash_code, __material) {}
 
 	inline float calcShade(const Scene *scene_ptr, const vec3 &hit_position, const vec3 &normal, const vec3 &reflect_ray_dir, const Material &material, const vec3 &surface_color, vec3 &color) const {
 		vec3 hit2light = __sphere.getCenter() - hit_position;
