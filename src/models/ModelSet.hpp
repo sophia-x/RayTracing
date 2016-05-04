@@ -9,7 +9,7 @@ private:
 	vector<Model *> __models;
 
 public:
-	ModelSet(const vector<Model *> &models): Model(Material()), __models(models) {}
+	ModelSet(const vector<Model *> &models): Model(Material(), vec3(0)), __models(models) {}
 
 	~ModelSet() {
 		for (auto it = __models.begin(); it != __models.end(); ++it) {

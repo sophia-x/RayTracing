@@ -13,7 +13,7 @@ protected:
 	const Material &__material;
 	const vec3 &__surface_color;
 
-public:
+public:	
 	Primitive(unsigned long hash_code, const Material &material, const vec3 &surface_color): __hash_code(hash_code), __material(material), __surface_color(surface_color) {}
 
 	virtual ~Primitive() {}

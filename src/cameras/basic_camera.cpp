@@ -29,8 +29,7 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 
 	if (material.isLight())
 		return hit_ptr->getSurfaceColor();
-
-	vec3 color(0);
+	vec3 color = backgroud_color * surface_color;
 	float diffuse = material.getDiffuse();
 	float specular = material.getSpecular();
 
@@ -40,26 +39,23 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 	vec3 reflect_ray_dir = reflect(ray_direction, normal);
 
 	for (auto it = lights.begin(); it != lights.end(); ++it) {
-		const vec3 &light_center = (*it)->getCenter();
-		vec3 hit2light = light_center - hit_position;
-		float len = length(hit2light);
-		vec3 hit2light_dir = hit2light / len;
-
-		if (scene_ptr->intersect(Ray(hit_position + EPSILON * hit2light_dir, hit2light_dir), len, (*it)->getHashCode()))
+		vec3 hit2light_dir;
+		float shade_idx = (*it)->calcShade(scene_ptr, hit_position, hit2light_dir);
+		if (shade_idx <= EPSILON)
 			continue;
 
-		hash_code += (*it)->getHashCode();
+		hash_code += (unsigned long)((*it)->getHashCode() * shade_idx);
 		if (diffuse > 0) {
 			float difuse_radio = dot(hit2light_dir, normal);
 			if (difuse_radio > 0) {
-				color += difuse_radio * surface_color * (*it)->getEmissionColor() * diffuse;
+				color += difuse_radio * surface_color * (*it)->getEmissionColor() * diffuse * shade_idx;
 			}
 		}
 
 		if (specular > 0) {
 			float specular_radio = dot(reflect_ray_dir, hit2light_dir);
 			if (specular_radio > 0) {
-				color += glm::pow(specular_radio, material.getSpecularPower()) * (*it)->getEmissionColor() * specular;
+				color += glm::pow(specular_radio, material.getSpecularPower()) * (*it)->getEmissionColor() * specular * shade_idx;
 			}
 		}
 	}

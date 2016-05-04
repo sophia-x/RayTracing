@@ -12,18 +12,18 @@ private:
 
 public:
 	Mesh(const char *file_name, const vec3 &surface_color, const Material &material):
-		Model(material) {
-		loadObj(file_name, surface_color);
+		Model(material, surface_color) {
+		loadObj(file_name, __surface_color);
 	}
 
 	Mesh(const vector<vec3> &vertices, const vector<int> &tri_idx, const vec3 &surface_color, const Material &material):
-		Model(material), __vertices(vertices) {
+		Model(material, surface_color), __vertices(vertices) {
 
 		size_t size = tri_idx.size() / 3;
 		__tris.reserve(size);
 
 		for (size_t i = 0; i < size; i++) {
-			__tris.push_back(Triangle(__vertices[tri_idx[3 * i]], __vertices[tri_idx[3 * i + 1]], __vertices[tri_idx[3 * i + 2]], __hash_code, surface_color, __material));
+			__tris.push_back(Triangle(__vertices[tri_idx[3 * i]], __vertices[tri_idx[3 * i + 1]], __vertices[tri_idx[3 * i + 2]], __hash_code, __surface_color, __material));
 		}
 	}
 

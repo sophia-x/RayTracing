@@ -1,19 +1,20 @@
 #ifndef LIGHT
 #define LIGHT
 
-#include "SphereModel.hpp"
+#include "Model.hpp"
 #include "../common.hpp"
 
-class Light : public SphereModel {
-private:
+class Scene;
+
+class Light : public Model {
+protected:
 	vec3 __emission_color;
 
 public:
-	Light(const vec3 &center, float radius, const vec3 &surface_color): SphereModel(center, radius, surface_color, Material(true)), __emission_color(surface_color) {}
+	Light(const Material &material, const vec3 &emission_color): Model(material, emission_color), __emission_color(emission_color) {}
+	virtual ~Light() {}
 
-	inline const vec3 &getCenter() const {
-		return __sphere.getCenter();
-	}
+	virtual float calcShade(const Scene *scene_ptr, const vec3 &hit_position, vec3 &hit2light_dir) const = 0;
 
 	inline const vec3 &getEmissionColor() const {
 		return __emission_color;

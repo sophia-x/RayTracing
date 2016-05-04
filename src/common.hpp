@@ -16,4 +16,8 @@ using namespace cv;
 const static float EPSILON = 0.0001;
 const static float REFLACT_EPSILON = 0.00001;
 
+const static size_t SAMPLES = 16;
+const static size_t SHADE_SIZE = 4;
+const static size_t SHADE_SIZE_2 = SHADE_SIZE * SHADE_SIZE;
+
 #endif

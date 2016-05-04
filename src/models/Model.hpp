@@ -11,9 +11,10 @@ protected:
 
 	Material __material;
 	unsigned long __hash_code;
+	vec3 __surface_color;
 
 public:
-	Model(const Material &material): __material(material), __hash_code(MODEL_NUM ++) {}
+	Model(const Material &material, const vec3 &surface_color): __material(material), __hash_code(MODEL_NUM ++), __surface_color(surface_color) {}
 
 	virtual ~Model() {}
 
