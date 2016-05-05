@@ -17,7 +17,7 @@ public:
 
 	virtual ~Model() {}
 
-	virtual void addPrimitives(vector<const Primitive *> &primitives) const = 0;
+	virtual void addPrimitives(vector<Primitive *> &primitives) = 0;
 
 	inline unsigned long getHashCode() const {
 		return __hash_code;

@@ -14,7 +14,7 @@ float dt = sqrt(__radius_2 - center2ray_2);											\
 float t1 = proj_len - dt;															\
 t = t1 >= 0 ? t1 : proj_len + dt;
 
-bool Sphere::intersect(const Ray &ray, float &t) const {
+bool Sphere::intersect(const Ray &ray, float &t) {
 	INTERSECT()
 	return true;
 }

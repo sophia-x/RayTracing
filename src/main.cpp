@@ -20,8 +20,10 @@ int main() {
 
 	Scene scene(vec3(0.05), 5);
 
-	Texture *texture = new Texture("textures/marble.jpg");
-	scene.addTexture(texture);
+	Texture *texture1 = new Texture("textures/marble.jpg");
+	Texture *texture2 = new Texture("textures/texture.jpg");
+	scene.addTexture(texture1);
+	scene.addTexture(texture2);
 
 	//                                                              color, diffuse, specular, specular_power, reflection, transparency, refraction_radio, absorbance
 	// scene.addModel(Plane (vec3(13, 7.4, 5.5), vec3(-13, 7.4, 5.5), vec3(-13, 7.4, -29),
@@ -34,7 +36,7 @@ int main() {
 	//                       vec3( -13, -4.4, -29),					Material(vec3(0.4, 0.3, 0.3), 1.0, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
 
 	// scene.addModel(new SphereModel(vec3(2, 0.8, -3), 2.5, 			Material(vec3(0.7, 0.7, 1.0), 0.0, 0.0, 00, 0.2, 0.8, 1.3, 0.15)));
-	// scene.addModel(new SphereModel(vec3(-5.5, -0.5, -7), 2, 		Material(vec3(0.7, 0.7, 1.0), 0.1, 0.0, 00, 0.5, 0.0, 1.3, 0.00)));
+	// scene.addModel(new SphereModel(vec3(-5.5, -0.5, -7), 2, 			Material(vec3(0.7, 0.7, 1.0), 0.1, 0.0, 00, 0.5, 0.0, 0.0, 0.00)));
 	// scene.addModel(new SphereModel(vec3(-1.5, -3.8, -1), 1.5, 		Material(vec3(1.0, 0.4, 0.4), 0.1, 1.0, 20, 0.0, 0.3, 1.1, 0.15)));
 	// scene.addModel(Cube(vec3(-2, 0.8, -3), vec3(1.5), 				Material(vec3(0.0, 1.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
 	// scene.addModel(new Mesh("objs/cube.obj", 						Material(vec3(1.0, 0.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
@@ -50,16 +52,21 @@ int main() {
 	// scene.addLight(new PointLight(vec3(-3, 5, -1), 0.1, vec3(0.6, 0.6, 0.8)));
 	// scene.addLight(new PointLight(vec3(-2, 2,  5), 0.1, vec3(1.0, 1.0, 1.0)));
 
-	scene.addModel(Plane (vec3(13, 7.4, -7), vec3(-13, 7.4, -7), vec3(-13, -7.4, -7),
-	                      vec3(13, -7.4, -7), 							Material(vec3(0.7, 0.7, 0.7), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(Plane (vec3(13, -2, -7), vec3(-13, -2, -7), vec3(-13, -2, 7),
-	                      vec3(13, -2, 7), 								Material(vec3(0.7, 0.7, 0.7), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
-	// scene.addModel(new SphereModel(vec3(0.0, 0.0, -4), 0.5, 			Material(vec3(1.0, 0.0, 0.0), 1.0, 1.0, 10, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(new SphereModel(vec3(0.0, 0.0, -4), 0.5, 			Material(texture, 0.5, 0.5, vec3(1.0, 1.0, 1.0), 1.0, 1.0, 10, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(new SphereModel(vec3(1.3, 0.0, -3), 0.5, 			Material(vec3(0.0, 1.0, 0.0), 1.0, 1.0, 10, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(new SphereModel(vec3(-2.0, 0.0, -5), 0.5, 			Material(vec3(0.0, 0.0, 1.0), 1.0, 1.0, 10, 0.0, 0.0, 0.0, 0.00)));
-	// scene.addLight(new PointLight(vec3(-2, 6, 0), 0.1, vec3(2.0)));
-	scene.addLight(new AreaLight(vec3(-2, 6, 0), 1, 1, vec3(2.0)));
+	scene.addModel(Plane (vec3(13, 7.4, -7), vec3(-13, 7.4, -7), vec3(-13, -7.4, -7), vec3(13, -7.4, -7),
+	                      vec2(0.0, 0.0), vec2(1.0, 0.0), vec2(1.0, 1.0), vec2(0.0, 1.0),
+	                      Material(texture2, 1, 1, vec3(0.7, 0.7, 0.7), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
+
+	scene.addModel(Plane (vec3(13, -2, -7), vec3(-13, -2, -7), vec3(-13, -2, 7), vec3(13, -2, 7),
+	                      Material(vec3(0.7, 0.7, 0.7), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
+
+	scene.addModel(Plane (vec3(13, 4, -7), vec3(-13, 4, -7), vec3(-13, 4, 7), vec3(13, 4, 7),
+	                      Material(vec3(0.7, 0.7, 0.7), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
+
+	scene.addModel(new SphereModel(vec3(0.0, 0.0, -4), 0.5, 			Material(texture1, 0.5, 0.5, vec3(1.0, 1.0, 1.0), 0.1, 0.0, 00, 0.5, 0.0, 0.0, 0.00)));
+	scene.addModel(new SphereModel(vec3(1.3, 0.0, -3), 0.5, 			Material(vec3(0.7, 0.7, 1.0), 0.1, 0.0, 00, 0.5, 0.0, 0.0, 0.00)));
+	scene.addModel(new SphereModel(vec3(-2.0, 0.0, -5), 0.5, 			Material(vec3(1.0, 0.4, 0.4), 0.1, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
+	// scene.addLight(new PointLight(vec3(-2, 3.5, 0), 0.1, vec3(2.0)));
+	scene.addLight(new AreaLight(vec3(-2, 3.5, 0), 1, 1, vec3(2.0)));
 
 	scene.buildWorld();
 

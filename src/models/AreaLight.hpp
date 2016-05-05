@@ -70,7 +70,7 @@ public:
 		return shade_idx / SAMPLES;
 	}
 
-	inline virtual void addPrimitives(vector<const Primitive *> &primitives) const {
+	inline virtual void addPrimitives(vector<Primitive *> &primitives) {
 		primitives.push_back(&__tri_a);
 		primitives.push_back(&__tri_b);
 	}

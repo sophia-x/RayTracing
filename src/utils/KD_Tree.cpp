@@ -2,7 +2,7 @@
 
 #include "KD_Tree.hpp"
 
-Node::Node(const AABB &box, const vector<const Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth): __left_ptr(0), __right_ptr(0) {
+Node::Node(const AABB &box, const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth): __left_ptr(0), __right_ptr(0) {
 	size_t size = primitives.size();
 	__box = box;
 
@@ -25,7 +25,7 @@ Node::Node(const AABB &box, const vector<const Primitive *> &primitives, const v
 			leaf = false;
 
 			vector<const vec3 *> left_min_ps(left), right_min_ps(right), left_max_ps(left), right_max_ps(right);
-			vector<const Primitive *> left_primitives(left), right_primitives(right);
+			vector<Primitive *> left_primitives(left), right_primitives(right);
 			int left_p = 0, right_p = 0;
 
 			AABB left_box, right_box;
@@ -58,14 +58,14 @@ Node::Node(const AABB &box, const vector<const Primitive *> &primitives, const v
 	}
 }
 
-bool Node::intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const {
+bool Node::intersect(const Ray &ray, float &t, Primitive * &hit_ptr) const {
 	float t_near, t_far;
 	if (!__box.intersect(ray, t_near, t_far)) {
 		return false;
 	}
 
 	float tmp_t;
-	Primitive const* tmp_ptr;
+	Primitive * tmp_ptr;
 
 	if (__left_ptr != 0) {
 		Node *near_ptr = 0;
@@ -169,7 +169,7 @@ inline void Node::nearPtr(const Ray &ray, Node* &near_ptr, Node* &far_ptr, float
 	}
 }
 
-inline float Node::splitCost(const vector<const Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right) {
+inline float Node::splitCost(const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right) {
 	unordered_set<float> splits;
 	for (size_t i = 0; i < min_ps.size(); i++) {
 		splits.insert((*min_ps[i])[__axis]);
@@ -190,7 +190,7 @@ inline float Node::splitCost(const vector<const Primitive *> &primitives, const 
 	return min_cost;
 }
 
-inline float Node::calculateCost(const vector<const Primitive *> &primitives, float split_point, int &left, int &right) const {
+inline float Node::calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right) const {
 	AABB left_box, right_box;
 	splitBox(left_box, right_box, split_point);
 

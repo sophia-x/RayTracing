@@ -17,7 +17,7 @@ public:
 
 	virtual ~Primitive() {}
 
-	virtual bool intersect(const Ray &ray, float &t) const = 0;
+	virtual bool intersect(const Ray &ray, float &t) = 0;
 
 	virtual bool intersect_seg(const Ray &ray, float len) const = 0;
 

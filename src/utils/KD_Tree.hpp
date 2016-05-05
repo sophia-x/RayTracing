@@ -16,13 +16,13 @@ class Node {
 private:
 	Node *__left_ptr, *__right_ptr;
 
-	vector<const Primitive *> __primitives;
+	vector<Primitive *> __primitives;
 	AABB __box;
 	float __split_point;
 	float __axis;
 
 public:
-	Node(const AABB &box, const vector<const Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth);
+	Node(const AABB &box, const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth);
 
 	~Node() {
 		if (__left_ptr != 0) {
@@ -31,16 +31,16 @@ public:
 		}
 	}
 
-	bool intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const;
+	bool intersect(const Ray &ray, float &t, Primitive * &hit_ptr) const;
 
 	bool intersect(const Ray &ray, float len, unsigned long hash_code) const;
 
 private:
 	inline void nearPtr(const Ray &ray, Node* &near_ptr, Node* &far_ptr, float t_near, float t_far) const;
 
-	inline float splitCost(const vector<const Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right);
+	inline float splitCost(const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right);
 
-	inline float calculateCost(const vector<const Primitive *> &primitives, float split_point, int &left, int &right) const;
+	inline float calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right) const;
 
 	inline void splitBox(AABB &left_box, AABB &right_box, float split_point) const;
 };
@@ -52,9 +52,9 @@ private:
 public:
 	KD_Tree(): __root(0) {}
 
-	KD_Tree(const vector<const Primitive *> &primitives) {
+	KD_Tree(const vector<Primitive *> &primitives) {
 		size_t size = primitives.size();
-		vector<const Primitive *> model_ptrs(size);
+		vector<Primitive *> model_ptrs(size);
 		vector<vec3> min_ps(size); vector<vec3> max_ps(size);
 		vector<const vec3 *> min_ptrs(size); vector<const vec3 *> max_ptrs(size);
 
@@ -76,7 +76,7 @@ public:
 		__root = shared_ptr<Node>(new Node(box, model_ptrs, min_ptrs, max_ptrs, 0));
 	}
 
-	inline bool intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const {
+	inline bool intersect(const Ray &ray, float &t, Primitive * &hit_ptr) const {
 		return __root->intersect(ray, t, hit_ptr);
 	}
 

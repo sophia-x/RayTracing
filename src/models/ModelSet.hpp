@@ -17,7 +17,7 @@ public:
 		}
 	}
 
-	inline void addPrimitives(vector<const Primitive *> &primitives) const {
+	inline void addPrimitives(vector<Primitive *> &primitives) {
 		for (size_t i = 0; i < __models.size(); i++)
 			__models[i]->addPrimitives(primitives);
 	}

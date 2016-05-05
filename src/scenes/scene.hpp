@@ -10,7 +10,7 @@
 
 class Scene {
 private:
-	vector<const Primitive *> __primitives;
+	vector<Primitive *> __primitives;
 	vector<const Model *> __models;
 	vector<const Light *> __lights;
 	vector<const Texture *> __textures;
@@ -32,7 +32,7 @@ public:
 		}
 	}
 
-	inline bool intersect(const Ray &ray, float &t, Primitive const* &hit_ptr) const {
+	inline bool intersect(const Ray &ray, float &t, Primitive * &hit_ptr) const {
 		return __tree.intersect(ray, t, hit_ptr);
 	}
 

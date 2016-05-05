@@ -18,7 +18,7 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 	const vector<const Light *> &lights = scene_ptr->getLights();
 	const vec3 &backgroud_color = scene_ptr->getBackgroundColor();
 
-	Primitive const* hit_ptr = 0;
+	Primitive * hit_ptr = 0;
 
 	if (!scene_ptr->intersect(ray, min_t, hit_ptr))
 		return backgroud_color;
@@ -33,8 +33,8 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 
 	if (material.isLight())
 		return surface_color;
-	vec3 color = backgroud_color * surface_color;
 
+	vec3 color(0);
 	vec3 reflect_ray_dir = reflect(ray_direction, normal);
 
 	for (auto it = lights.begin(); it != lights.end(); ++it) {

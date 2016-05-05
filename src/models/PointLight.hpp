@@ -42,7 +42,7 @@ public:
 		return 1;
 	}
 
-	inline virtual void addPrimitives(vector<const Primitive *> &primitives) const {
+	inline virtual void addPrimitives(vector<Primitive *> &primitives) {
 		primitives.push_back(&__sphere);
 	}
 };

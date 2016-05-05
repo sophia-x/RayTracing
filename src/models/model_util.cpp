@@ -7,6 +7,14 @@ Mesh *Plane(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &d, const Ma
 	return new Mesh(vertices, tri_idx, material);
 }
 
+Mesh *Plane(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &d, const vec2 uv_a, const vec2 uv_b, const vec2 uv_c, const vec2 uv_d, const Material &material) {
+	vector<vec3> vertices = {a, b, c, d};
+	vector<vec2> uvs = {uv_a, uv_b, uv_c, uv_d};
+	vector<int> tri_idx = {0, 1, 2, 2, 3, 0};
+
+	return new Mesh(vertices, uvs, tri_idx, material);
+}
+
 Mesh *Plane(const Material &material) {
 	return Plane(vec3(-1, 0, -1), vec3(-1, 0, 1), vec3(1, 0, 1), vec3(1, 0, -1), material);
 }

@@ -21,7 +21,7 @@ public:
 
 	inline vec3 getUvColor(float u, float v) const {
 		// fetch a bilinearly filtered texel
-		float fu = (u + 1000.5f) * __width;
+		float fu = (u + 1000.0f) * __width;
 		float fv = (v + 1000.0f) * __width;
 
 		int u1 = ((int)fu) % __width;

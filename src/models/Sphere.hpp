@@ -19,7 +19,7 @@ public:
 		__vc = cross(__vn, __ve);
 	}
 
-	bool intersect(const Ray &ray, float &t) const;
+	bool intersect(const Ray &ray, float &t);
 
 	bool intersect_seg(const Ray &ray, float len) const;
 
