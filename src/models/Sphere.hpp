@@ -25,25 +25,25 @@ public:
 
 	bool intersect(const AABB &box) const;
 
-	inline vec3 getNormal(const vec3 &hit_position) const {
-		return (hit_position - __center) / __radius;
-	}
+	inline void getColorNormal(const vec3 &hit_position, vec3 &color, vec3 &normal) const {
+		if (!__material.hasTexture()) {
+			color =  __material.getColor();
+			normal = (hit_position - __center) / __radius;
+			return;
+		}
 
-	inline vec3 getColor(const vec3 &hit_position) const {
-		if (!__material.hasTexture())
-			return __material.getColor();
-
-		vec3 normal = (hit_position - __center) / __radius;
-		float phi = acosf(-dot(normal, __vn));
+		vec3 dir = (hit_position - __center) / __radius;
+		float phi = acosf(-dot(dir, __vn));
 		float u, v = phi * __material.getRvScale() * (1.0f / PI);
-		float theta = (acosf( dot( __ve, normal ) / sinf( phi ))) * (2.0f / PI);
-		if (dot( __vc, normal ) >= 0) {
+		float theta = (acosf( dot( __ve, dir ) / sinf( phi ))) * (2.0f / PI);
+		if (dot( __vc, dir ) >= 0) {
 			u = (1.0f - theta) * __material.getRuScale();
 		} else {
 			u = theta * __material.getRuScale();
 		}
 
-		return __material.getColor(u, v);
+		__material.getColorNormal(u, v, color, normal);
+		normal = normalize(normal + dir);
 	}
 
 	inline vec3 getMinP() const {

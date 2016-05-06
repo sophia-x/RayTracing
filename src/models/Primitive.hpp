@@ -23,9 +23,7 @@ public:
 
 	virtual bool intersect(const AABB &box) const = 0;
 
-	virtual vec3 getNormal(const vec3 &hit_position) const = 0;
-
-	virtual vec3 getColor(const vec3 &hit_position) const = 0;
+	virtual void getColorNormal(const vec3 &hit_position, vec3 &color, vec3 &normal) const = 0;
 
 	virtual vec3 getMinP() const = 0;
 

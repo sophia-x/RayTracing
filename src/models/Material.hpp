@@ -80,8 +80,9 @@ public:
 		return __color;
 	}
 
-	inline vec3 getColor(float u, float v) const {
-		return __texture->getUvColor(u, v) * __color;
+	inline void getColorNormal(float u, float v, vec3 &color, vec3 &normal) const {
+		__texture->getColorNormal(u, v, color, normal);
+		color *= __color;
 	}
 };
 

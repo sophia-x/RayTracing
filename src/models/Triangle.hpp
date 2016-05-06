@@ -29,17 +29,17 @@ public:
 
 	bool intersect(const AABB &box) const;
 
-	inline vec3 getNormal(const vec3 &hit_position) const {
-		return __normal;
-	}
-
-	inline vec3 getColor(const vec3 &hit_position) const {
-		if (!__material.hasTexture())
-			return __material.getColor();
+	inline void getColorNormal(const vec3 &hit_position, vec3 &color, vec3 &normal) const {
+		if (!__material.hasTexture()) {
+			color = __material.getColor();
+			normal = __normal;
+			return;
+		}
 
 		float u = (__uv_a[0] + __u * (__uv_b[0] - __uv_a[0]) + __v * (__uv_c[0] - __uv_a[0])) * __material.getRuScale();
 		float v = (__uv_a[1] + __u * (__uv_b[1] - __uv_a[1]) + __v * (__uv_c[1] - __uv_a[1])) * __material.getRvScale();
-		return __material.getColor( u, v );
+		__material.getColorNormal( u, v, color, normal);
+		normal = normalize(__normal + normal);
 	}
 
 	inline vec3 getMinP() const {

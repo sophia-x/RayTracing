@@ -28,8 +28,8 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 	const vec3 &ray_position = ray.getPosition();
 	const vec3 &ray_direction = ray.getDirection();
 	vec3 hit_position = ray_position + min_t * ray_direction;
-	vec3 normal = hit_ptr->getNormal(hit_position);
-	vec3 surface_color = hit_ptr->getColor(hit_position);
+	vec3 normal, surface_color;
+	hit_ptr->getColorNormal(hit_position, surface_color, normal);
 
 	if (material.isLight())
 		return surface_color;

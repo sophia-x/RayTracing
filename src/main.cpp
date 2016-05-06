@@ -21,7 +21,7 @@ int main() {
 	Scene scene(vec3(0.05), 5);
 
 	Texture *texture1 = new Texture("textures/marble.jpg");
-	Texture *texture2 = new Texture("textures/texture.jpg");
+	Texture *texture2 = new Texture("textures/texture.jpg", "textures/marble.jpg", 1.0);
 	scene.addTexture(texture1);
 	scene.addTexture(texture2);
 
