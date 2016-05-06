@@ -29,3 +29,5 @@
 
 # Build Folder
 build/
+objs/
+textures/
