@@ -35,16 +35,44 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 		return surface_color;
 
 	vec3 color(0);
-	vec3 reflect_ray_dir = reflect(ray_direction, normal);
 
-	for (auto it = lights.begin(); it != lights.end(); ++it) {
-		float shade_idx = (*it)->calcShade(scene_ptr, hit_position, normal, reflect_ray_dir, material, surface_color, color);
-		hash_code += (unsigned long)((*it)->getHashCode() * shade_idx);
+	float diffuse = material.getDiffuse();
+	float specular = material.getSpecular();
+
+	if (diffuse >= EPSILON || specular >= EPSILON) {
+		float shade_idx;
+		for (auto it = lights.begin(); it != lights.end(); ++it) {
+			vec3 mean_dir = (*it)->calcShade(scene_ptr, hit_position, shade_idx);
+			if (shade_idx <= EPSILON)
+				continue;
+
+			hash_code += (unsigned long)((*it)->getHashCode() * shade_idx);
+			const vec3 &emission_color = (*it)->getEmissionColor();
+
+			if (diffuse > 0) {
+				float difuse_radio = dot(mean_dir, normal);
+				if (difuse_radio > 0) {
+					color += difuse_radio * surface_color * emission_color * diffuse * shade_idx;
+				}
+			}
+
+			if (specular > 0) {
+				vec3 R = mean_dir - 2.0f * dot( mean_dir, normal ) * normal;
+				float radio = dot( ray_direction, R );
+				if (radio > 0) {
+					float specular_idx = material.getSpecularIdx();
+					float spec = radio * specular * shade_idx / (specular_idx - specular_idx * radio + radio);
+					// add specular component to ray color
+					color += spec * emission_color;
+				}
+			}
+		}
 	}
 
 	float reflection = material.getReflection();
 	float dist;
 	if (reflection > 0) {
+		vec3 reflect_ray_dir = reflect(ray_direction, normal);
 		color += reflection * raytracing(Ray(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir), recursive_count + 1, dist, hash_code, scene_ptr) * surface_color;
 	}
 
@@ -52,6 +80,7 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 	if (!outside) {
 		normal = -normal;
 	}
+
 	float transparency = material.getTransparency();
 	if (transparency > 0) {
 		float refraction_radio = material.getRefractionRadio();

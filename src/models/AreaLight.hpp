@@ -26,17 +26,12 @@ public:
 		__tri_b(__c, __d, __a, __hash_code, __material),
 		__min_p(position - vec3(width, 0, height)) {}
 
-	inline float calcShade(const Scene *scene_ptr, const vec3 &hit_position, const vec3 &normal, const vec3 &reflect_ray_dir, const Material &material, const vec3 &surface_color, vec3 &color) const {
-		float diffuse = material.getDiffuse();
-		float specular = material.getSpecular();
-		if (diffuse <= EPSILON && specular <= EPSILON)
-			return 0;
-
-		float shade_idx = 0;
+	inline vec3 calcShade(const Scene *scene_ptr, const vec3 &hit_position, float &shade_idx) const {
+		shade_idx = 0;
 		// Monte Carlo rendering
 		float dx = __width / SHADE_SIZE, dy = __height / SHADE_SIZE;
 
-		vec3 t_color(0);
+		vec3 total_dir(0);
 		for (size_t i = 0; i < SAMPLES; i ++) {
 			int idx = i % SHADE_SIZE_2;
 			int w_idx = idx / SHADE_SIZE, h_idx = idx % SHADE_SIZE;
@@ -51,23 +46,12 @@ public:
 				continue;
 
 			shade_idx ++;
-			if (diffuse > 0) {
-				float difuse_radio = dot(hit2light_dir, normal);
-				if (difuse_radio > 0) {
-					t_color += difuse_radio * surface_color * __emission_color * diffuse;
-				}
-			}
-
-			if (specular > 0) {
-				float specular_radio = dot(reflect_ray_dir, hit2light_dir);
-				if (specular_radio > 0) {
-					t_color += glm::pow(specular_radio, material.getSpecularPower()) * __emission_color * specular;
-				}
-			}
+			total_dir += hit2light_dir;
 		}
 
-		color += t_color / float(SAMPLES);
-		return shade_idx / SAMPLES;
+		float tmp = shade_idx;
+		shade_idx /= SAMPLES;
+		return total_dir / tmp;
 	}
 
 	inline virtual void addPrimitives(vector<Primitive *> &primitives) {
