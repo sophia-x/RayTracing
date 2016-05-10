@@ -14,14 +14,14 @@ private:
 	const vec2 &__uv_a, &__uv_b, &__uv_c;
 	vec3 __e1, __e2;
 	vec3 __normal;
-	float __u, __v;
+	float __t;
 
 public:
 	Triangle(const vec3 &a, const vec3 &b, const vec3 &c, unsigned long hash_code, const Material &material):
-		Primitive(hash_code, material), __a(a), __b(b), __c(c), __e1(b - a), __e2(c - a), __normal(normalize(cross(a - b, b - c))), __uv_a(dummy), __uv_b(dummy), __uv_c(dummy) {}
+		Primitive(hash_code, material), __a(a), __b(b), __c(c), __e1(b - a), __e2(c - a), __normal(normalize(cross(a - b, b - c))), __uv_a(dummy), __uv_b(dummy), __uv_c(dummy), __t(length(cross(__e1, __e2))) {}
 
 	Triangle(const vec3 &a, const vec3 &b, const vec3 &c, const vec2 &uv_a, const vec2 &uv_b, const vec2 &uv_c, unsigned long hash_code, const Material &material):
-		Primitive(hash_code, material), __a(a), __b(b), __c(c), __e1(b - a), __e2(c - a), __normal(normalize(cross(a - b, b - c))), __uv_a(uv_a), __uv_b(uv_b), __uv_c(uv_c) {}
+		Primitive(hash_code, material), __a(a), __b(b), __c(c), __e1(b - a), __e2(c - a), __normal(normalize(cross(a - b, b - c))), __uv_a(uv_a), __uv_b(uv_b), __uv_c(uv_c), __t(length(cross(__e1, __e2))) {}
 
 	bool intersect(const Ray &ray, float &t);
 
@@ -36,9 +36,13 @@ public:
 			return;
 		}
 
-		float u = (__uv_a[0] + __u * (__uv_b[0] - __uv_a[0]) + __v * (__uv_c[0] - __uv_a[0])) * __material.getRuScale();
-		float v = (__uv_a[1] + __u * (__uv_b[1] - __uv_a[1]) + __v * (__uv_c[1] - __uv_a[1])) * __material.getRvScale();
-		__material.getColorNormal( u, v, color, normal);
+		vec3 a_p = __a - hit_position;
+		float u_t = length(cross(__e2, a_p));
+		float v_t = length(cross(__e1, a_p));
+		float w_t = __t - u_t - v_t;
+		vec2 uv = (w_t * __uv_a + u_t * __uv_b + v_t * __uv_c) / __t;
+
+		__material.getColorNormal( uv[0], uv[1], color, normal);
 		normal = normalize(__normal + normal);
 	}
 

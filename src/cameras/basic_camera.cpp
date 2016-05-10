@@ -76,7 +76,7 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 		color += reflection * raytracing(Ray(hit_position + REFLACT_EPSILON * reflect_ray_dir, reflect_ray_dir), recursive_count + 1, dist, hash_code, scene_ptr) * surface_color;
 	}
 
-	bool outside = dot(normal, -ray_direction) > 0 ? true : false;
+	bool outside = -dot(normal, ray_direction) > 0 ? true : false;
 	if (!outside) {
 		normal = -normal;
 	}
@@ -94,7 +94,7 @@ vec3 raytracing(const Ray &ray, unsigned short recursive_count, float &min_t, un
 
 		vec3 refract_color = raytracing(Ray(hit_position + EPSILON * refract_dir, refract_dir), recursive_count + 1, dist, hash_code, scene_ptr);
 		vec3 absorbance_color = glm::exp( surface_color * material.getAbsorbance() * -dist);
-		color += refract_color * absorbance_color;
+		color += refract_color * absorbance_color * transparency;
 	}
 
 	return color;

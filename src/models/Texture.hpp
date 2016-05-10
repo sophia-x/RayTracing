@@ -41,7 +41,7 @@ public:
 	inline void getColorNormal(float u, float v, vec3 &color, vec3 &normal) const {
 		// fetch a bilinearly filtered texel
 		float fu = (u + 1000.0f) * __width;
-		float fv = (v + 1000.0f) * __width;
+		float fv = (v + 1000.0f) * __height;
 
 		int u1 = ((int)fu) % __width;
 		int v1 = ((int)fv) % __height;

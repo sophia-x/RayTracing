@@ -29,8 +29,6 @@ if(t < 0) return false;								\
 bool Triangle::intersect(const Ray &ray, float &t) {
 	INTERSECT()
 
-	__u = u * inv_det;
-	__v = v * inv_det;
 	return true;
 }
 
