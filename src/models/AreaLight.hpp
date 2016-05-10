@@ -9,6 +9,11 @@
 #include "../common.hpp"
 #include "../scenes/scene.hpp"
 
+// Aera Light
+const static float SAMPLES = 128;
+const static size_t SHADE_SIZE = 4;
+const static size_t SHADE_SIZE_2 = SHADE_SIZE * SHADE_SIZE;
+
 class AreaLight : public Light {
 protected:
 	Triangle __tri_a, __tri_b;
