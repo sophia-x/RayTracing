@@ -7,14 +7,14 @@
 #include "../common.hpp"
 #include "../scenes/scene.hpp"
 
+static const float IM_DIST = 1.0f;
+
 void thread_raytracing(const Ray &ray, vec3 *color, unsigned long *hash_code, Scene const* scene_ptr);
 
 vec3 raytracing(const Ray &ray, unsigned short recusive_count, float &min_t, unsigned long &hash_code, Scene const* scene_ptr);
 
 class BasicCamera {
 protected:
-	static const float IM_DIST;
-
 	vec3 __position, __direction, __up;
 	float __fov, __radio;
 	const Scene *__scene_ptr;

@@ -1,7 +1,5 @@
 #include "basic_camera.hpp"
 
-const float BasicCamera::IM_DIST = 1.0f;
-
 void thread_raytracing(const Ray &ray, vec3 *color, unsigned long *hash_code, Scene const* scene_ptr) {
 	float min_t;
 	*color = raytracing(ray, 0, min_t, *hash_code, scene_ptr);

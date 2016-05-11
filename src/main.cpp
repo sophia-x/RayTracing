@@ -98,30 +98,30 @@ Mat scene_a() {
 
 	/*************************Add Light**********************/
 	// Point Light
-	// scene.addLight(new PointLight(vec3(-2, 3.5, 0), 0.1, vec3(2.0)));
+	scene.addLight(new PointLight(vec3(-2, 3.5, 0), 0.1, vec3(2.0)));
 
-	// Aera Light
-	scene.addLight(new AreaLight(vec3(-2, 3.5, 0), 1, 1, vec3(2.0)));
+	// Area Light
+	// scene.addLight(new AreaLight(vec3(-2, 3.5, 0), 1, 1, vec3(2.0)));
 
 	/*************************Init k-d tree**********************/
 	scene.buildWorld();
 
 	/*************************Init camera**********************/
 	// PinHoleCamera
-	// PinHoleCamera camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
+	PinHoleCamera camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
 
 
 	// Depth Camera
-	DepthCamera camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
+	// DepthCamera camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
 
 	camera.setScene(&scene);
 	/*************************Start rendering**********************/
 	Mat result(camera.getHeight(width), width, CV_32FC3);
 	// PinHoleCamera
-	// camera.render(result, 1);
+	camera.render(result, 4);
 
 	//Depth Camera
-	camera.render(result, 5, 16, 1, 1);
+	// camera.render(result, 5, 8, 4, 16);
 
 	return result;
 }
