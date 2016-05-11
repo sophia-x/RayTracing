@@ -14,6 +14,8 @@ private:
 	float __u_scale, __v_scale, __ru_scale, __rv_scale;
 
 public:
+	Material() {}
+
 	Material(const Texture *texture, float u_scale, float v_scale, const vec3 &color, float diffuse, float specular, float specular_idx, float reflection, float transparency,
 	         float refraction_radio, float absorbance, bool is_light = false): __texture(texture), __has_texture(true), __color(color), __u_scale(u_scale), __v_scale(v_scale), __ru_scale(1 / u_scale), __rv_scale(1 / v_scale), __diffuse(diffuse), __specular(specular), __specular_idx(specular_idx),
 		__reflection(reflection), __transparency(transparency), __refraction_radio(refraction_radio), __absorbance(absorbance), __is_light(is_light) {}

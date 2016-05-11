@@ -12,6 +12,7 @@
 #include "models/SphereModel.hpp"
 #include "models/Mesh.hpp"
 #include "models/model_util.hpp"
+#include "models/ModelSet.hpp"
 
 #include "cameras/PinHoleCamera.hpp"
 #include "cameras/DepthCamera.hpp"
@@ -236,6 +237,16 @@ Mat scene_motion() {
 	// scene.addModel(knot);
 	// mat4 t_m = translate(vec3(2, 0, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(0.5));
 	// knot->transform(t_m);
+
+	// SphereModel *sphere1 = new SphereModel(Material(planet, 1.0, 1.0, vec3(1.0, 0.0, 0.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
+	// SphereModel *sphere2 = new SphereModel(Material(planet, 1.0, 1.0, vec3(0.0, 1.0, 0.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
+	// vector<Model *> models; models.push_back(sphere1); models.push_back(sphere2);
+	// vector<mat4> mats; mats.push_back(translate(vec3(-1, 0, 0))); mats.push_back(translate(vec3(1, 0, 0)));
+	// ModelSet *set = new ModelSet(models, mats);
+	// scene.addModel(set);
+	// mat4 t_m = translate(vec3(2, 0, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(0.5));
+	// set->transform(t_m);
+
 	/*************************Add Light**********************/
 	scene.addLight(new PointLight(vec3(-5, 5, 5), 0.1, vec3(2.0)));
 	scene.addLight(new PointLight(vec3(5, 5, 5), 0.1, vec3(2.0)));
