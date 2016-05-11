@@ -43,6 +43,8 @@ public:
 	}
 
 	inline void buildWorld() {
+		cout << "total primitives:" << __primitives.size() << endl;
+
 		auto begin = chrono::system_clock::now();
 
 		__tree = KD_Tree(__primitives);

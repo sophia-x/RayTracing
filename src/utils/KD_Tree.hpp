@@ -40,7 +40,7 @@ private:
 
 	inline float splitCost(const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right);
 
-	inline float calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right) const;
+	inline float calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps) const;
 
 	inline void splitBox(AABB &left_box, AABB &right_box, float split_point) const;
 };

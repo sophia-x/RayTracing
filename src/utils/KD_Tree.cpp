@@ -31,14 +31,14 @@ Node::Node(const AABB &box, const vector<Primitive *> &primitives, const vector<
 			AABB left_box, right_box;
 			splitBox(left_box, right_box, __split_point);
 			for (size_t i = 0; i < size; i ++) {
-				if (primitives[i]->intersect(left_box)) {
+				if ((*min_ps[i])[__axis] <= __split_point && primitives[i]->intersect(left_box)) {
 					left_min_ps[left_p] = min_ps[i];
 					left_max_ps[left_p] = max_ps[i];
 					left_primitives[left_p] = primitives[i];
 					left_p ++;
 				}
 
-				if (primitives[i]->intersect(right_box)) {
+				if ((*max_ps[i])[__axis] >= __split_point && primitives[i]->intersect(right_box)) {
 					right_min_ps[right_p] = min_ps[i];
 					right_max_ps[right_p] = max_ps[i];
 					right_primitives[right_p] = primitives[i];
@@ -178,7 +178,7 @@ inline float Node::splitCost(const vector<Primitive *> &primitives, const vector
 
 	float min_cost = numeric_limits<float>::max(); int tmp_left, tmp_right;
 	for (auto it = splits.begin(); it != splits.end(); ++it ) {
-		float cost = calculateCost(primitives, *it, tmp_left, tmp_right);
+		float cost = calculateCost(primitives, *it, tmp_left, tmp_right, min_ps, max_ps);
 		if (cost < min_cost) {
 			min_cost = cost;
 			__split_point = *it;
@@ -190,15 +190,15 @@ inline float Node::splitCost(const vector<Primitive *> &primitives, const vector
 	return min_cost;
 }
 
-inline float Node::calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right) const {
+inline float Node::calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps) const {
 	AABB left_box, right_box;
 	splitBox(left_box, right_box, split_point);
 
 	left = 0, right = 0;
 	for (size_t i = 0; i < primitives.size(); i ++) {
-		if (primitives[i]->intersect(left_box))
+		if ((*min_ps[i])[__axis] <= split_point && primitives[i]->intersect(left_box))
 			left ++;
-		if (primitives[i]->intersect(right_box))
+		if ((*max_ps[i])[__axis] >= split_point && primitives[i]->intersect(right_box))
 			right ++;
 	}
 

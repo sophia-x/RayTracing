@@ -56,7 +56,7 @@ int main() {
 	// camera.render(result, 4, 16, 1, 1);
 
 	auto begin = chrono::system_clock::now();
-	
+
 	// Mat result = scene_simple();
 	Mat result = scene_obj();
 
