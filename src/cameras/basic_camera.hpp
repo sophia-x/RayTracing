@@ -9,8 +9,6 @@
 
 static const float IM_DIST = 1.0f;
 
-void thread_raytracing(const Ray &ray, vec3 *color, unsigned long *hash_code, Scene const* scene_ptr);
-
 vec3 raytracing(const Ray &ray, unsigned short recusive_count, float &min_t, unsigned long &hash_code, Scene const* scene_ptr);
 
 class BasicCamera {
