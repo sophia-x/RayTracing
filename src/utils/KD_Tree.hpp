@@ -12,6 +12,10 @@ static const size_t SIZE = 5;
 static const float COST_INTERSECT = 1.0f;
 static const float COST_TRAVEL = 0.3f;
 
+class Node;
+
+void thread_node(Node **node_ptr, const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth);
+
 class Node {
 private:
 	Node *__left_ptr, *__right_ptr;
@@ -40,7 +44,7 @@ private:
 
 	inline float splitCost(const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, int &left, int &right);
 
-	inline float calculateCost(const vector<size_t> &indexes, const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<vec3> &min_ps, const vector<vec3> &max_ps) const;
+	inline float calculateCost(const vector<size_t> &indexes, vector<bool> &is_lefts, const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<vec3> &min_ps, const vector<vec3> &max_ps) const;
 
 	inline void splitBox(AABB &left_box, AABB &right_box, float split_point) const;
 };
@@ -54,12 +58,10 @@ public:
 
 	KD_Tree(const vector<Primitive *> &primitives) {
 		size_t size = primitives.size();
-		vector<Primitive *> model_ptrs(size);
 		vector<vec3> min_ps(size); vector<vec3> max_ps(size);
 		vector<size_t> indexes(size);
 
 		for (size_t i = 0; i < size; i ++) {
-			model_ptrs[i] = primitives[i];
 			min_ps[i] = primitives[i]->getMinP();
 			max_ps[i] = primitives[i]->getMaxP();
 			indexes[i] = i;
@@ -71,7 +73,7 @@ public:
 			max_p = glm::max(max_p, max_ps[i]);
 		}
 		AABB box = AABB((min_p + max_p) / 2.0f, max_p - min_p);
-		__root = shared_ptr<Node>(new Node(box, indexes, model_ptrs, min_ps, max_ps, 0));
+		__root = shared_ptr<Node>(new Node(box, indexes, primitives, min_ps, max_ps, 0));
 	}
 
 	inline bool intersect(const Ray &ray, float &t, Primitive * &hit_ptr) const {

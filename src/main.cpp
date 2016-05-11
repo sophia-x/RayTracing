@@ -99,22 +99,22 @@ Mat scene_simple() {
 
 	//background plane
 
-	// scene.addModel(Plane (vec3(13, 10, -15), vec3(-13, 10, -15), vec3(-13, -7.4, -15), vec3(13, -7.4, -15),
-	//                       vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
-	//                       Material(mountain, 1, 1, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
 	scene.addModel(Plane (vec3(13, 10, -15), vec3(-13, 10, -15), vec3(-13, -7.4, -15), vec3(13, -7.4, -15),
 	                      vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
-	                      Material(rock, 0.25, 0.25, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
+	                      Material(mountain, 1, 1, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
+	// scene.addModel(Plane (vec3(13, 10, -15), vec3(-13, 10, -15), vec3(-13, -7.4, -15), vec3(13, -7.4, -15),
+	//                       vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
+	//                       Material(rock, 0.25, 0.25, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
 
 	//ground plane
 
-	// scene.addModel(Plane (vec3(13, -2, -13), vec3(-13, -2, -13), vec3(-13, -2, 0), vec3(13, -2, 0),
-	//                       vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
-	//                       Material(chess_board, 1.0, 1.0, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
-
 	scene.addModel(Plane (vec3(13, -2, -13), vec3(-13, -2, -13), vec3(-13, -2, 0), vec3(13, -2, 0),
 	                      vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
-	                      Material(water, 1.0, 1.0, vec3(37, 243, 250) / 255.0f, 0.0, 0.0, 00, 1.0, 0.0, 0.0, 0.00)));
+	                      Material(chess_board, 1.0, 1.0, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00)));
+
+	// scene.addModel(Plane (vec3(13, -2, -13), vec3(-13, -2, -13), vec3(-13, -2, 0), vec3(13, -2, 0),
+	//                       vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
+	//                       Material(water, 1.0, 1.0, vec3(37, 243, 250) / 255.0f, 0.0, 0.0, 00, 1.0, 0.0, 0.0, 0.00)));
 
 	// Spheres
 	scene.addModel(new SphereModel(vec3(0.0, 0.0, -4), 0.5, 			Material(vec3(0.0, 1.0, 0.0), 0.1, 0.0, 00, 0.7, 0.0, 0.0, 0.00)));
@@ -134,7 +134,6 @@ Mat scene_simple() {
 	/*************************Init camera**********************/
 	// PinHoleCamera
 	PinHoleCamera camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
-
 
 	// Depth Camera
 	// DepthCamera camera(vec3(0, 0, 0), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
@@ -161,8 +160,8 @@ Mat scene_obj() {
 
 	/*************************Add models**********************/
 
-	// scene.addModel(new Mesh("objs/cube.obj", Material(vec3(1.0, 0.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
+	// scene.addModel(new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
+	scene.addModel(new Mesh("objs/dinosaur.2k.obj", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
 
 	/*************************Add Light**********************/
 	// Point Light
