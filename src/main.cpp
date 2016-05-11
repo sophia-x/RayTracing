@@ -161,7 +161,7 @@ Mat scene_obj() {
 	/*************************Add models**********************/
 
 	// scene.addModel(new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(new Mesh("objs/dinosaur.2k.obj", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
+	scene.addModel(new Mesh("objs/rocker-arm.18k.obj", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
 
 	/*************************Add Light**********************/
 	// Point Light

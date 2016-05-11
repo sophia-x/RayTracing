@@ -6,6 +6,7 @@
 
 void thread_node(Node **node_ptr, const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth) {
 	(*node_ptr) = new Node(box, indexes, primitives, min_ps, max_ps, depth);
+
 }
 
 Node::Node(const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth): __left_ptr(0), __right_ptr(0) {
