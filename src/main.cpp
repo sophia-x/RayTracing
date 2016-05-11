@@ -1,4 +1,5 @@
 #include <opencv2/highgui/highgui.hpp>
+#include <chrono>
 
 #include "common.hpp"
 
@@ -14,7 +15,8 @@
 #include "cameras/DepthCamera.hpp"
 #include "scenes/scene.hpp"
 
-Mat scene_a();
+Mat scene_simple();
+Mat scene_obj();
 
 int main() {
 	//                                                              color, diffuse, specular, specular_power, reflection, transparency, refraction_radio, absorbance
@@ -53,7 +55,15 @@ int main() {
 	// camera.render(result, 15, 16, 40, 16);
 	// camera.render(result, 4, 16, 1, 1);
 
-	Mat result = scene_a();
+	auto begin = chrono::system_clock::now();
+	
+	// Mat result = scene_simple();
+	Mat result = scene_obj();
+
+	auto end = chrono::system_clock::now();
+	std::chrono::duration<double> dur = end - begin;
+	cout << "KD Tree Builing + Raytracing:" << dur.count() << " s" << endl;
+
 	imshow("Raytracing", result);
 
 	vector<int> params;
@@ -65,7 +75,7 @@ int main() {
 	return 0;
 }
 
-Mat scene_a() {
+Mat scene_simple() {
 	/*************************Default params**********************/
 	float radio = 4.0 / 3.0;
 	size_t width = 640;
@@ -137,6 +147,51 @@ Mat scene_a() {
 
 	//Depth Camera
 	// camera.render(result, 5, 8, 16, 16);
+
+	return result;
+}
+
+Mat scene_obj() {
+	/*************************Default params**********************/
+	float radio = 4.0 / 3.0;
+	size_t width = 640;
+
+	/*************************Init Scene**********************/
+	Scene scene(vec3(0), 5);
+
+	/*************************Add models**********************/
+
+	// scene.addModel(new Mesh("objs/cube.obj", Material(vec3(1.0, 0.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0, 0.0, 0.00)));
+	scene.addModel(new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
+
+	/*************************Add Light**********************/
+	// Point Light
+	scene.addLight(new PointLight(vec3(-500, 500,  500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(500, 500,  500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(0, 500,  500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(0, 500,  -500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(500, 500,  -500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(-500, 500,  -500), 0.1, vec3(1.0)));
+
+	scene.addLight(new PointLight(vec3(-500, -500,  500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(500, -500,  500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(0, -500,  500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(0, -500,  -500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(500, -500,  -500), 0.1, vec3(1.0)));
+	scene.addLight(new PointLight(vec3(-500, -500,  -500), 0.1, vec3(1.0)));
+
+	/*************************Init k-d tree**********************/
+	scene.buildWorld();
+
+	/*************************Init camera**********************/
+	// PinHoleCamera
+	PinHoleCamera camera(vec3(0, 0, 300), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
+
+	camera.setScene(&scene);
+	/*************************Start rendering**********************/
+	Mat result(camera.getHeight(width), width, CV_32FC3);
+	// PinHoleCamera
+	camera.render(result, 1);
 
 	return result;
 }

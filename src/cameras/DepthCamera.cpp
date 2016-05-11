@@ -71,7 +71,7 @@ void DepthCamera::render(Mat &result, float f, float aperture_size, size_t sampl
 
 	auto end = chrono::system_clock::now();
 	std::chrono::duration<double> dur = end - begin;
-	cout << "total:" << dur.count() << " s" << endl;
+	cout << "raytracing total:" << dur.count() << " s" << endl;
 
 	result.convertTo(result, CV_8UC3, 255.0);
 }

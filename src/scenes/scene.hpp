@@ -1,6 +1,8 @@
 #ifndef SCENE
 #define SCENE
 
+#include <chrono>
+
 #include "../common.hpp"
 #include "../models/Model.hpp"
 #include "../models/Texture.hpp"
@@ -41,7 +43,13 @@ public:
 	}
 
 	inline void buildWorld() {
+		auto begin = chrono::system_clock::now();
+
 		__tree = KD_Tree(__primitives);
+
+		auto end = chrono::system_clock::now();
+		std::chrono::duration<double> dur = end - begin;
+		cout << "Build KD Tree:" << dur.count() << " s" << endl;
 	}
 
 	inline void addModel(Model *model) {

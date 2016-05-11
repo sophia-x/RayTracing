@@ -124,7 +124,10 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t, size_t thread_num
 
 	auto end = chrono::system_clock::now();
 	std::chrono::duration<double> dur_1st = end - begin;
-	cout << "1st pass:" << dur_1st.count() << " s" << endl;
+	if (anti_t > 1)
+		cout << "raytracing 1st pass:" << dur_1st.count() << " s" << endl;
+	else
+		cout << "raytracing total:" << dur_1st.count() << " s" << endl;
 
 	if (anti_t > 1) {
 		unsigned short w_t = 0, h_t = 0;
@@ -140,8 +143,8 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t, size_t thread_num
 
 		end = chrono::system_clock::now();
 		std::chrono::duration<double> dur_2nd = end - begin;
-		cout << "2nd pass:" << dur_2nd.count() << " s" << endl;
-		cout << "total:" << dur_1st.count() + dur_2nd.count() << " s" << endl;
+		cout << "raytracing 2nd pass:" << dur_2nd.count() << " s" << endl;
+		cout << "raytracing total:" << dur_1st.count() + dur_2nd.count() << " s" << endl;
 	}
 
 	result.convertTo(result, CV_8UC3, 255.0);
