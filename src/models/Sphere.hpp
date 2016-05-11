@@ -11,6 +11,10 @@ private:
 	vec3 __vn, __ve, __vc;
 
 public:
+	Sphere(unsigned long hash_code, const Material &material): Primitive(hash_code, material) {
+		transform(mat4(1));
+	}
+
 	Sphere(const vec3 &center, float radius, unsigned long hash_code, const Material &material):
 		Primitive(hash_code, material), __center(center), __radius(radius), __radius_2(radius * radius) {
 
@@ -24,6 +28,17 @@ public:
 	bool intersect_seg(const Ray &ray, float len) const;
 
 	bool intersect(const AABB &box) const;
+
+	void transform(const mat4 &transform_matrix) {
+		__center = vec3(transform_matrix * vec4(0, 0, 0, 1));
+		vec3 p = vec3(transform_matrix * vec4(0, 0, 1, 0));
+		__radius_2 = dot(p, p);
+		__radius = sqrt(__radius_2);
+
+		__vn = normalize(vec3(transform_matrix * vec4(0, 1, 0, 0)));
+		__ve = normalize(vec3(transform_matrix * vec4(1, 0, 0, 0)));
+		__vc = cross(__vn, __ve);
+	}
 
 	inline void getColorNormal(const vec3 &hit_position, vec3 &color, vec3 &normal) const {
 		if (!__material.hasTexture()) {

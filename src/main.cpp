@@ -1,6 +1,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <chrono>
 
+#include <glm/gtx/transform.hpp>
+
 #include "common.hpp"
 
 #include "models/Material.hpp"
@@ -17,6 +19,7 @@
 
 Mat scene_simple();
 Mat scene_obj();
+Mat scene_motion();
 
 int main() {
 	//                                                              color, diffuse, specular, specular_power, reflection, transparency, refraction_radio, absorbance
@@ -58,7 +61,8 @@ int main() {
 	auto begin = chrono::system_clock::now();
 
 	// Mat result = scene_simple();
-	Mat result = scene_obj();
+	// Mat result = scene_obj();
+	Mat result = scene_motion();
 
 	auto end = chrono::system_clock::now();
 	std::chrono::duration<double> dur = end - begin;
@@ -160,8 +164,8 @@ Mat scene_obj() {
 
 	/*************************Add models**********************/
 
-	// scene.addModel(new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
-	scene.addModel(new Mesh("objs/rocker-arm.18k.obj", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
+	scene.addModel(new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
+	// scene.addModel(new Mesh("objs/dinosaur.2k.obj", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00)));
 
 	/*************************Add Light**********************/
 	// Point Light
@@ -190,6 +194,44 @@ Mat scene_obj() {
 	/*************************Start rendering**********************/
 	Mat result(camera.getHeight(width), width, CV_32FC3);
 	// PinHoleCamera
+	camera.render(result, 1);
+
+	return result;
+}
+
+Mat scene_motion() {
+	const mat4 I = mat4(1);
+
+	/*************************Default params**********************/
+	float radio = 4.0 / 3.0;
+	size_t width = 640;
+
+	/*************************Init Scene**********************/
+	Scene scene(vec3(0), 5);
+
+	/*************************Add textures**********************/
+	Texture *planet = new Texture("textures/planet.jpg");
+	scene.addTexture(planet);
+
+	/*************************Add models**********************/
+	SphereModel *sphere = new SphereModel(Material(planet, 1.0, 1.0, vec3(1.0, 1.0, 1.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
+	scene.addModel(sphere);
+
+	mat4 t_m = translate(vec3(0, -1, -1)) * rotate(PI / 2, vec3(1, 0, 0)) * scale(vec3(0.5));
+	sphere->transform(t_m);
+
+	/*************************Add Light**********************/
+	scene.addLight(new PointLight(vec3(-5, 5, 0), 0.1, vec3(2.0)));
+
+	/*************************Init k-d tree**********************/
+	scene.buildWorld();
+
+	/*************************Init camera**********************/
+	PinHoleCamera camera(vec3(0, 0, 3), vec3(0, 0, -1), vec3(0, 1, 0), radians(60.0f), radio);
+
+	camera.setScene(&scene);
+	/*************************Start rendering**********************/
+	Mat result(camera.getHeight(width), width, CV_32FC3);
 	camera.render(result, 1);
 
 	return result;
