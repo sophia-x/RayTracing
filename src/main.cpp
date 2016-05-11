@@ -61,9 +61,9 @@ int main() {
 
 	auto begin = chrono::system_clock::now();
 
-	// Mat result = scene_simple();
+	Mat result = scene_simple();
 	// Mat result = scene_obj();
-	Mat result = scene_motion();
+	// Mat result = scene_motion();
 
 	auto end = chrono::system_clock::now();
 	std::chrono::duration<double> dur = end - begin;
@@ -83,7 +83,7 @@ int main() {
 Mat scene_simple() {
 	/*************************Default params**********************/
 	float radio = 4.0 / 3.0;
-	size_t width = 640;
+	size_t width = 1024;
 
 	/*************************Init Scene**********************/
 	Scene scene(vec3(0), 5);
@@ -122,13 +122,19 @@ Mat scene_simple() {
 	//                       Material(water, 1.0, 1.0, vec3(37, 243, 250) / 255.0f, 0.0, 0.0, 00, 1.0, 0.0, 0.0, 0.00)));
 
 	// Spheres
-	scene.addModel(new SphereModel(vec3(0.0, 0.0, -4), 0.5, 			Material(vec3(0.0, 1.0, 0.0), 0.1, 0.0, 00, 0.7, 0.0, 0.0, 0.00)));
+	scene.addModel(new SphereModel(vec3(0.0, 1.0, -4), 0.5, 			Material(vec3(0.0, 1.0, 0.0), 0.1, 0.0, 00, 0.7, 0.0, 0.0, 0.00)));
 	scene.addModel(new SphereModel(vec3(1.3, 0.0, -3), 0.5, 			Material(vec3(1.0, 1.0, 1.0), 0.0, 0.0, 00, 0.0, 1.0, 1.3, 0.00)));
 	scene.addModel(new SphereModel(vec3(-2.0, 0.0, -5), 1.0, 			Material(planet, 1.0, 1.0, vec3(1.0, 1.0, 1.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00)));
 
+	//OBJ
+	Mesh *knot = new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00));
+	scene.addModel(knot);
+	mat4 t_m = translate(vec3(0, 0, -2.5)) * scale(vec3(0.5));
+	knot->transform(t_m);
+
 	/*************************Add Light**********************/
 	// Point Light
-	scene.addLight(new PointLight(vec3(-2, 3.5, 0), 0.1, vec3(2.0)));
+	scene.addLight(new PointLight(vec3(0, 3.5, 0), 0.1, vec3(2.0)));
 
 	// Area Light
 	// scene.addLight(new AreaLight(vec3(-2, 3.5, 0), 1, 1, vec3(2.0)));
@@ -147,7 +153,7 @@ Mat scene_simple() {
 	/*************************Start rendering**********************/
 	Mat result(camera.getHeight(width), width, CV_32FC3);
 	// PinHoleCamera
-	camera.render(result, 1);
+	camera.render(result, 4);
 
 	//Depth Camera
 	// camera.render(result, 5, 8, 16, 16);
