@@ -22,7 +22,7 @@ private:
 	float __axis;
 
 public:
-	Node(const AABB &box, const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth);
+	Node(const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth);
 
 	~Node() {
 		if (__left_ptr != 0) {
@@ -38,9 +38,9 @@ public:
 private:
 	inline void nearPtr(const Ray &ray, Node* &near_ptr, Node* &far_ptr, float t_near, float t_far) const;
 
-	inline float splitCost(const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right);
+	inline float splitCost(const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, int &left, int &right);
 
-	inline float calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps) const;
+	inline float calculateCost(const vector<size_t> &indexes, const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<vec3> &min_ps, const vector<vec3> &max_ps) const;
 
 	inline void splitBox(AABB &left_box, AABB &right_box, float split_point) const;
 };
@@ -56,15 +56,13 @@ public:
 		size_t size = primitives.size();
 		vector<Primitive *> model_ptrs(size);
 		vector<vec3> min_ps(size); vector<vec3> max_ps(size);
-		vector<const vec3 *> min_ptrs(size); vector<const vec3 *> max_ptrs(size);
+		vector<size_t> indexes(size);
 
 		for (size_t i = 0; i < size; i ++) {
 			model_ptrs[i] = primitives[i];
 			min_ps[i] = primitives[i]->getMinP();
 			max_ps[i] = primitives[i]->getMaxP();
-
-			min_ptrs[i] = &min_ps[i];
-			max_ptrs[i] = &max_ps[i];
+			indexes[i] = i;
 		}
 
 		vec3 min_p(numeric_limits<float>::max()), max_p(numeric_limits<float>::min());
@@ -73,7 +71,7 @@ public:
 			max_p = glm::max(max_p, max_ps[i]);
 		}
 		AABB box = AABB((min_p + max_p) / 2.0f, max_p - min_p);
-		__root = shared_ptr<Node>(new Node(box, model_ptrs, min_ptrs, max_ptrs, 0));
+		__root = shared_ptr<Node>(new Node(box, indexes, model_ptrs, min_ps, max_ps, 0));
 	}
 
 	inline bool intersect(const Ray &ray, float &t, Primitive * &hit_ptr) const {

@@ -2,8 +2,8 @@
 
 #include "KD_Tree.hpp"
 
-Node::Node(const AABB &box, const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, size_t depth): __left_ptr(0), __right_ptr(0) {
-	size_t size = primitives.size();
+Node::Node(const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth): __left_ptr(0), __right_ptr(0) {
+	size_t size = indexes.size();
 	__box = box;
 
 	if (size == 0)
@@ -20,39 +20,36 @@ Node::Node(const AABB &box, const vector<Primitive *> &primitives, const vector<
 			__axis = 2;
 
 		int left, right;
-		float cost = splitCost(primitives, min_ps, max_ps, left, right);
+		float cost = splitCost(indexes, primitives, min_ps, max_ps, left, right);
 		if (cost < size * COST_INTERSECT) {
 			leaf = false;
 
-			vector<const vec3 *> left_min_ps(left), right_min_ps(right), left_max_ps(left), right_max_ps(right);
-			vector<Primitive *> left_primitives(left), right_primitives(right);
+			vector<size_t> left_indexes(left), right_indexes(right);
 			int left_p = 0, right_p = 0;
 
 			AABB left_box, right_box;
 			splitBox(left_box, right_box, __split_point);
-			for (size_t i = 0; i < size; i ++) {
-				if ((*min_ps[i])[__axis] <= __split_point && primitives[i]->intersect(left_box)) {
-					left_min_ps[left_p] = min_ps[i];
-					left_max_ps[left_p] = max_ps[i];
-					left_primitives[left_p] = primitives[i];
+			for (size_t idx = 0; idx < size; idx ++) {
+				size_t i = indexes[idx];
+				if (min_ps[i][__axis] <= __split_point && primitives[i]->intersect(left_box)) {
+					left_indexes[left_p] = i;
 					left_p ++;
 				}
 
-				if ((*max_ps[i])[__axis] >= __split_point && primitives[i]->intersect(right_box)) {
-					right_min_ps[right_p] = min_ps[i];
-					right_max_ps[right_p] = max_ps[i];
-					right_primitives[right_p] = primitives[i];
+				if (max_ps[i][__axis] >= __split_point && primitives[i]->intersect(right_box)) {
+					right_indexes[right_p] = i;
 					right_p ++;
 				}
 			}
-			__left_ptr = new Node(left_box, left_primitives, left_min_ps, left_max_ps, depth + 1);
-			__right_ptr = new Node(right_box, right_primitives, right_min_ps, right_max_ps, depth + 1);
+			__left_ptr = new Node(left_box, left_indexes, primitives, min_ps, max_ps, depth + 1);
+			__right_ptr = new Node(right_box, right_indexes, primitives, min_ps, max_ps, depth + 1);
 		}
 	}
 
 	if (leaf) {
 		__primitives.reserve(size);
-		for (size_t i = 0; i < size; i ++) {
+		for (size_t idx = 0; idx < size; idx ++) {
+			size_t i = indexes[idx];
 			__primitives.push_back(primitives[i]);
 		}
 	}
@@ -169,16 +166,17 @@ inline void Node::nearPtr(const Ray &ray, Node* &near_ptr, Node* &far_ptr, float
 	}
 }
 
-inline float Node::splitCost(const vector<Primitive *> &primitives, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps, int &left, int &right) {
+inline float Node::splitCost(const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, int &left, int &right) {
 	unordered_set<float> splits;
-	for (size_t i = 0; i < min_ps.size(); i++) {
-		splits.insert((*min_ps[i])[__axis]);
-		splits.insert((*max_ps[i])[__axis]);
+	for (size_t idx = 0; idx < indexes.size(); idx++) {
+		size_t i = indexes[idx];
+		splits.insert(min_ps[i][__axis]);
+		splits.insert(max_ps[i][__axis]);
 	}
 
 	float min_cost = numeric_limits<float>::max(); int tmp_left, tmp_right;
 	for (auto it = splits.begin(); it != splits.end(); ++it ) {
-		float cost = calculateCost(primitives, *it, tmp_left, tmp_right, min_ps, max_ps);
+		float cost = calculateCost(indexes, primitives, *it, tmp_left, tmp_right, min_ps, max_ps);
 		if (cost < min_cost) {
 			min_cost = cost;
 			__split_point = *it;
@@ -190,15 +188,16 @@ inline float Node::splitCost(const vector<Primitive *> &primitives, const vector
 	return min_cost;
 }
 
-inline float Node::calculateCost(const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<const vec3 *> &min_ps, const vector<const vec3 *> &max_ps) const {
+inline float Node::calculateCost(const vector<size_t> &indexes, const vector<Primitive *> &primitives, float split_point, int &left, int &right, const vector<vec3> &min_ps, const vector<vec3> &max_ps) const {
 	AABB left_box, right_box;
 	splitBox(left_box, right_box, split_point);
 
 	left = 0, right = 0;
-	for (size_t i = 0; i < primitives.size(); i ++) {
-		if ((*min_ps[i])[__axis] <= split_point && primitives[i]->intersect(left_box))
+	for (size_t idx = 0; idx < indexes.size(); idx ++) {
+		size_t i = indexes[idx];
+		if (min_ps[i][__axis] <= split_point && primitives[i]->intersect(left_box))
 			left ++;
-		if ((*max_ps[i])[__axis] >= split_point && primitives[i]->intersect(right_box))
+		if (max_ps[i][__axis] >= split_point && primitives[i]->intersect(right_box))
 			right ++;
 	}
 
