@@ -42,7 +42,7 @@ public:
 		float w_t = __t - u_t - v_t;
 		vec2 uv = (w_t * __uv_a + u_t * __uv_b + v_t * __uv_c) / __t;
 
-		__material.getColorNormal( uv[0], uv[1], color, normal);
+		__material.getColorNormal( uv[0]*__material.getRuScale(), uv[1]*__material.getRvScale(), color, normal);
 		normal = normalize(__normal + normal);
 	}
 
