@@ -19,6 +19,8 @@ public:
 
 	virtual void addPrimitives(vector<Primitive *> &primitives) = 0;
 
+	virtual void transform(const mat4 &transform_matrix) = 0;
+
 	inline unsigned long getHashCode() const {
 		return __hash_code;
 	}

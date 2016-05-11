@@ -29,6 +29,13 @@ public:
 
 	bool intersect(const AABB &box) const;
 
+	inline void update() {
+		__e1 = __b - __a;
+		__e2 = __c - __a;
+		__normal = normalize(cross(__a - __b, __b - __c));
+		__t = length(cross(__e1, __e2));
+	}
+
 	inline void getColorNormal(const vec3 &hit_position, vec3 &color, vec3 &normal) const {
 		if (!__material.hasTexture()) {
 			color = __material.getColor();

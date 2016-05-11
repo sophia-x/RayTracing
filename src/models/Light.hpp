@@ -16,6 +16,10 @@ public:
 
 	virtual vec3 calcShade(const Scene *scene_ptr, const vec3 &hit_position, float &shade_idx) const = 0;
 
+	virtual void transform(const mat4 &transform_matrix){
+		
+	}
+
 	inline const vec3 &getEmissionColor() const {
 		return __emission_color;
 	}

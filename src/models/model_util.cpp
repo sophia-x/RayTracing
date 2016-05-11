@@ -15,10 +15,13 @@ Mesh *Plane(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &d, const ve
 	return new Mesh(vertices, uvs, tri_idx, material);
 }
 
+Mesh *Plane(const vec2 uv_a, const vec2 uv_b, const vec2 uv_c, const vec2 uv_d, const Material &material) {
+	return Plane(vec3(-1, 0, -1), vec3(-1, 0, 1), vec3(1, 0, 1), vec3(1, 0, -1), uv_a, uv_b, uv_c, uv_d, material);
+}
+
 Mesh *Plane(const Material &material) {
 	return Plane(vec3(-1, 0, -1), vec3(-1, 0, 1), vec3(1, 0, 1), vec3(1, 0, -1), material);
 }
-
 
 Mesh *Cube(const vec3 &pos, const vec3 &size, const Material &material) {
 	vec3 half_size = size / 2.0f;
@@ -46,5 +49,5 @@ Mesh *Cube(const vec3 &pos, const vec3 &size, const Material &material) {
 }
 
 Mesh *Cube(const Material &material) {
-	return Cube(vec3(0), vec3(1), material);
+	return Cube(vec3(0), vec3(2), material);
 }

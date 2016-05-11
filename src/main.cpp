@@ -211,17 +211,35 @@ Mat scene_motion() {
 
 	/*************************Add textures**********************/
 	Texture *planet = new Texture("textures/planet.jpg");
+	Texture *chess_board = new Texture("textures/chess_board.jpg");
 	scene.addTexture(planet);
+	scene.addTexture(chess_board);
 
 	/*************************Add models**********************/
-	SphereModel *sphere = new SphereModel(Material(planet, 1.0, 1.0, vec3(1.0, 1.0, 1.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
-	scene.addModel(sphere);
+	// SphereModel *sphere = new SphereModel(Material(planet, 1.0, 1.0, vec3(1.0, 1.0, 1.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
+	// scene.addModel(sphere);
+	// mat4 t_m = translate(vec3(0, -1, -1)) * rotate(PI / 2, vec3(1, 0, 0)) * scale(vec3(0.5));
+	// sphere->transform(t_m);
 
-	mat4 t_m = translate(vec3(0, -1, -1)) * rotate(PI / 2, vec3(1, 0, 0)) * scale(vec3(0.5));
-	sphere->transform(t_m);
+	// Mesh *plane = Plane (vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
+	//                      Material(chess_board, 1.0, 1.0, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00));
+	// scene.addModel(plane);
+	// mat4 t_m = translate(vec3(0, -1, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(5, 0, 10));
+	// plane->transform(t_m);
 
+	// Mesh *box = Cube(Material(vec3(0.0, 1.0, 0.0), 0.1, 1.0, 20, 0.0, 0.0, 0.0, 0.00));
+	// scene.addModel(box);
+	// mat4 t_m = translate(vec3(0, -1, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(0.5));
+	// box->transform(t_m);
+
+	// Mesh *knot = new Mesh("objs/knot.3DS", Material(vec3(1.0, 0.0, 0.0), 0.5, 0.5, 20, 0.0, 0.0, 0.0, 0.00));
+	// scene.addModel(knot);
+	// mat4 t_m = translate(vec3(2, 0, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(0.5));
+	// knot->transform(t_m);
 	/*************************Add Light**********************/
-	scene.addLight(new PointLight(vec3(-5, 5, 0), 0.1, vec3(2.0)));
+	scene.addLight(new PointLight(vec3(-5, 5, 5), 0.1, vec3(2.0)));
+	scene.addLight(new PointLight(vec3(5, 5, 5), 0.1, vec3(2.0)));
+	scene.addLight(new PointLight(vec3(0, 5, 5), 0.1, vec3(2.0)));
 
 	/*************************Init k-d tree**********************/
 	scene.buildWorld();

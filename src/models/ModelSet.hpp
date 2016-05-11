@@ -17,6 +17,11 @@ public:
 		}
 	}
 
+	void transform(const mat4 &transform_matrix) {
+		for (auto it = __models.begin(); it != __models.end(); it ++)
+			(*it)->transform(transform_matrix);
+	}
+
 	inline void addPrimitives(vector<Primitive *> &primitives) {
 		for (size_t i = 0; i < __models.size(); i++)
 			__models[i]->addPrimitives(primitives);
