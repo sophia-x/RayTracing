@@ -83,7 +83,7 @@ int main() {
 Mat scene_simple() {
 	/*************************Default params**********************/
 	float radio = 4.0 / 3.0;
-	size_t width = 1024;
+	size_t width = 640;
 
 	/*************************Init Scene**********************/
 	Scene scene(vec3(0), 5);
@@ -153,7 +153,7 @@ Mat scene_simple() {
 	/*************************Start rendering**********************/
 	Mat result(camera.getHeight(width), width, CV_32FC3);
 	// PinHoleCamera
-	camera.render(result, 4);
+	camera.render(result, 1);
 
 	//Depth Camera
 	// camera.render(result, 5, 8, 16, 16);

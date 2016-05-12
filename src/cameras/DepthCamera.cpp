@@ -59,14 +59,14 @@ void DepthCamera::render(Mat &result, float f, float aperture_size, size_t sampl
 	vector<thread> ts(thread_num);
 	mutex mutex_w_h;
 	unsigned short w_t = 0, h_t = 0;
-	for (int i = 0; i < thread_num; i ++) {
+	for (size_t i = 0; i < thread_num; i ++) {
 		ts[i] = thread(thread_pool, &mutex_w_h, &w_t, &h_t, width, height, __width_camera_half, __height_camera_half, pixel_size,
 		               f, aperture_size, sample_size, __camera2world_matrix, &result, __scene_ptr);
 	}
 
 	auto begin = chrono::system_clock::now();
 
-	for (int i = 0; i < thread_num; i ++)
+	for (size_t i = 0; i < thread_num; i ++)
 		ts[i].join();
 
 	auto end = chrono::system_clock::now();

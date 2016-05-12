@@ -4,11 +4,6 @@
 
 #include "KD_Tree.hpp"
 
-void thread_node(Node **node_ptr, const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth) {
-	(*node_ptr) = new Node(box, indexes, primitives, min_ps, max_ps, depth);
-
-}
-
 Node::Node(const AABB &box, const vector<size_t> &indexes, const vector<Primitive *> &primitives, const vector<vec3> &min_ps, const vector<vec3> &max_ps, size_t depth): __left_ptr(0), __right_ptr(0) {
 	size_t size = indexes.size();
 	__box = box;
@@ -49,10 +44,8 @@ Node::Node(const AABB &box, const vector<size_t> &indexes, const vector<Primitiv
 				}
 			}
 
-			thread l_thread(thread_node, &__left_ptr, left_box, left_indexes, primitives, min_ps, max_ps, depth + 1);
-			thread r_thread(thread_node, &__right_ptr, right_box, right_indexes, primitives, min_ps, max_ps, depth + 1);
-			l_thread.join();
-			r_thread.join();
+			__left_ptr = new Node(left_box, left_indexes, primitives, min_ps, max_ps, depth + 1);
+			__right_ptr = new Node(right_box, right_indexes, primitives, min_ps, max_ps, depth + 1);
 		}
 	}
 

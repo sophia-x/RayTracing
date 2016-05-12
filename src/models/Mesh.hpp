@@ -44,7 +44,7 @@ public:
 	}
 
 	void transform(const mat4 &transform_matrix) {
-		for (int i = 0; i < __vertices.size(); i ++) {
+		for (size_t i = 0; i < __vertices.size(); i ++) {
 			__vertices[i] = vec3(transform_matrix * vec4(__model_verticles[i], 1));
 		}
 
@@ -60,7 +60,7 @@ private:
 	void loadObj(const char* file_name);
 	void buildModel() {
 		vec3 mean(0), max_p(numeric_limits<float>::min()), min_p(numeric_limits<float>::max());
-		for (int i = 0; i < __vertices.size(); i++) {
+		for (size_t i = 0; i < __vertices.size(); i++) {
 			mean += __vertices[i];
 			max_p = max(max_p, __vertices[i]);
 			min_p = min(min_p, __vertices[i]);
@@ -69,7 +69,7 @@ private:
 		vec3 m = max(abs(max_p - mean), abs(min_p - mean));
 
 		__model_verticles.reserve(__vertices.size());
-		for (int i = 0; i < __vertices.size(); i ++) {
+		for (size_t i = 0; i < __vertices.size(); i ++) {
 			vec3 p = __vertices[i] - mean;
 			for (int j = 0; j < 3; j ++) {
 				if (m[j] >= EPSILON) {

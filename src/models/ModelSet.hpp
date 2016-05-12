@@ -11,7 +11,7 @@ private:
 
 public:
 	ModelSet(const vector<Model *> &models, const vector<mat4> &trans_mats): Model(Material()), __models(models), __trans_mats(trans_mats) {
-		for (int i = 0; i < __models.size(); i++)
+		for (size_t i = 0; i < __models.size(); i++)
 			__models[i]->transform(__trans_mats[i]);
 	}
 
@@ -22,7 +22,7 @@ public:
 	}
 
 	void transform(const mat4 &transform_matrix) {
-		for (int i = 0; i < __models.size(); i ++)
+		for (size_t i = 0; i < __models.size(); i ++)
 			__models[i]->transform(transform_matrix * __trans_mats[i]);
 	}
 
