@@ -125,9 +125,9 @@ bool Triangle::intersect(const AABB &box) const {
 	const vec3 &box_center = box.getPos();
 	const vec3 &box_half_size = box.getHalfSize();
 
-	vec3 v0 = __a - box_center;
-	vec3 v1 = __b - box_center;
-	vec3 v2 = __c - box_center;
+	vec3 v0 = __a - box_center + EPSILON;
+	vec3 v1 = __b - box_center + EPSILON;
+	vec3 v2 = __c - box_center + EPSILON;
 
 	vec3 e0 = v1 - v0;
 	vec3 e1 = v2 - v1;
