@@ -61,9 +61,9 @@ int main() {
 
 	auto begin = chrono::system_clock::now();
 
-	Mat result = scene_simple();
+	// Mat result = scene_simple();
 	// Mat result = scene_obj();
-	// Mat result = scene_motion();
+	Mat result = scene_motion();
 
 	auto end = chrono::system_clock::now();
 	std::chrono::duration<double> dur = end - begin;
@@ -223,16 +223,16 @@ Mat scene_motion() {
 	scene.addTexture(chess_board);
 
 	/*************************Add models**********************/
-	// SphereModel *sphere = new SphereModel(Material(planet, 1.0, 1.0, vec3(1.0, 1.0, 1.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
-	// scene.addModel(sphere);
-	// mat4 t_m = translate(vec3(0, -1, -1)) * rotate(PI / 2, vec3(1, 0, 0)) * scale(vec3(0.5));
-	// sphere->transform(t_m);
+	SphereModel *sphere = new SphereModel(Material(planet, 1.0, 1.0, vec3(1.0, 1.0, 1.0), 0.8, 0.2, 20, 0.0, 0.0, 0.0, 0.00));
+	scene.addModel(sphere);
+	mat4 sphere_m = translate(vec3(0, 0, -1)) * rotate(PI / 2, vec3(1, 0, 0)) * scale(vec3(0.5));
+	sphere->transform(sphere_m);
 
-	// Mesh *plane = Plane (vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
-	//                      Material(chess_board, 1.0, 1.0, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00));
-	// scene.addModel(plane);
-	// mat4 t_m = translate(vec3(0, -1, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(5, 0, 10));
-	// plane->transform(t_m);
+	Mesh *plane = Plane (vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0),
+	                     Material(chess_board, 1.0, 1.0, vec3(1.0), 0.5, 0.0, 00, 0.0, 0.0, 0.0, 0.00));
+	scene.addModel(plane);
+	mat4 plane_m = translate(vec3(0, -1, 0)) * rotate(PI / 4, vec3(0, 1, 0)) * scale(vec3(5, 0, 10));
+	plane->transform(plane_m);
 
 	// Mesh *box = Cube(Material(vec3(0.0, 1.0, 0.0), 0.1, 1.0, 20, 0.0, 0.0, 0.0, 0.00));
 	// scene.addModel(box);
@@ -254,9 +254,14 @@ Mat scene_motion() {
 	// set->transform(t_m);
 
 	/*************************Add Light**********************/
-	scene.addLight(new PointLight(vec3(-5, 5, 5), 0.1, vec3(2.0)));
-	scene.addLight(new PointLight(vec3(5, 5, 5), 0.1, vec3(2.0)));
-	scene.addLight(new PointLight(vec3(0, 5, 5), 0.1, vec3(2.0)));
+	// PointLight *point_light = new PointLight(vec3(2.0));
+	// scene.addLight(point_light);
+	// mat4 light_m = translate(vec3(2, 2, -1)) * scale(vec3(0.01));
+	// point_light->transform(light_m);
+
+	// scene.addLight(new PointLight(vec3(-5, 5, 5), 0.1, vec3(2.0)));
+	// scene.addLight(new PointLight(vec3(5, 5, 5), 0.1, vec3(2.0)));
+	// scene.addLight(new PointLight(vec3(0, 5, 5), 0.1, vec3(2.0)));
 
 	/*************************Init k-d tree**********************/
 	scene.buildWorld();

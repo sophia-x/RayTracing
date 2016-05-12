@@ -12,6 +12,9 @@ protected:
 	Sphere __sphere;
 
 public:
+	PointLight(const vec3 &emission_color): Light(Material(emission_color, true), emission_color),
+		__sphere(__hash_code, __material) {}
+
 	PointLight(const vec3 &center, float radius, const vec3 &emission_color): Light(Material(emission_color, true), emission_color),
 		__sphere(center, radius, __hash_code, __material) {}
 
@@ -25,6 +28,10 @@ public:
 			shade_idx = 0;
 
 		return hit2light_dir;
+	}
+
+	inline void transform(const mat4 &transform_matrix) {
+		__sphere.transform(transform_matrix);
 	}
 
 	inline virtual void addPrimitives(vector<Primitive *> &primitives) {
