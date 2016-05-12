@@ -35,6 +35,14 @@ public:
 
 	virtual ~BasicCamera() {}
 
+	void transform(const vec3 &position, const vec3 &direction, const vec3 &up) {
+		__position = position;
+		__direction = direction;
+		__up = up;
+		__camera2world_matrix = inverse(lookAt(__position, __position + __direction, __up));
+		__world_position = vec3(__camera2world_matrix * vec4(vec3(0.0f), 1.0f));
+	}
+
 	inline void setScene(const Scene *scene_ptr) {
 		__scene_ptr = scene_ptr;
 	}
