@@ -16,8 +16,9 @@ FILE(GLOB CAMERA src/cameras/*.cpp)
 FILE(GLOB MODEL src/models/*.cpp)
 FILE(GLOB SCENE src/scenes/*.cpp)
 FILE(GLOB UTIL src/utils/*.cpp)
+FILE(GLOB DEMO src/demo/*.cpp)
 
-set(SRCS src/main.cpp ${CAMERA} ${MODEL} ${SCENE} ${UTIL})
+set(SRCS src/main.cpp ${CAMERA} ${MODEL} ${SCENE} ${UTIL} ${DEMO})
 add_executable(RayTracing ${SRCS})
 
 TARGET_LINK_LIBRARIES(RayTracing ${EXTRA_LIBS})
