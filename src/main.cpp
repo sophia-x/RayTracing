@@ -61,9 +61,9 @@ int main() {
 
 	auto begin = chrono::system_clock::now();
 
-	// Mat result = scene_simple();
+	Mat result = scene_simple();
 	// Mat result = scene_obj();
-	Mat result = scene_motion();
+	// Mat result = scene_motion();
 
 	auto end = chrono::system_clock::now();
 	std::chrono::duration<double> dur = end - begin;
@@ -258,6 +258,11 @@ Mat scene_motion() {
 	// scene.addLight(point_light);
 	// mat4 light_m = translate(vec3(2, 2, -1)) * scale(vec3(0.01));
 	// point_light->transform(light_m);
+
+	// AreaLight *area_light = new AreaLight(vec3(2.0));
+	// scene.addLight(area_light);
+	// mat4 a_light_m = translate(vec3(2, 2, -1)) * rotate(PI / 4, vec3(1, 0, 0)) * scale(vec3(0.5));
+	// area_light->transform(a_light_m);
 
 	// scene.addLight(new PointLight(vec3(-5, 5, 5), 0.1, vec3(2.0)));
 	// scene.addLight(new PointLight(vec3(5, 5, 5), 0.1, vec3(2.0)));

@@ -17,32 +17,43 @@ const static size_t SHADE_SIZE_2 = SHADE_SIZE * SHADE_SIZE;
 class AreaLight : public Light {
 protected:
 	Triangle __tri_a, __tri_b;
-	float __width, __height;
-	vec3 __position;
-	vec3 __min_p;
+	vec3 __dx, __dy;
 	vec3 __a, __b, __c, __d;
 
 public:
+	AreaLight(const vec3 &emission_color): AreaLight(vec3(0), 2, 2, emission_color) {}
+
 	AreaLight(const vec3 &position, float width, float height, const vec3 &emission_color): Light(Material(emission_color, true), emission_color),
-		__width(width), __height(height), __position(position), __a(position + vec3(-width / 2, 0, height / 2)),
-		__b(position + vec3(width / 2, 0, height / 2)), __c(position + vec3(width / 2, 0, -height / 2)),
-		__d(position + vec3(-width / 2, 0, -height / 2)),
-		__tri_a(__a, __b, __c, __hash_code, __material),
-		__tri_b(__c, __d, __a, __hash_code, __material),
-		__min_p(position - vec3(width, 0, height)) {}
+		__a(position + vec3(-width / 2, 0, height / 2)), __b(position + vec3(width / 2, 0, height / 2)),
+		__c(position + vec3(width / 2, 0, -height / 2)), __d(position + vec3(-width / 2, 0, -height / 2)),
+		__tri_a(__a, __b, __c, __hash_code, __material), __tri_b(__c, __d, __a, __hash_code, __material) {
+		__dx = (__c - __d) / float(SHADE_SIZE);
+		__dy = (__a - __d) / float(SHADE_SIZE);
+	}
+
+	void transform(const mat4 &transform_matrix) {
+		__a = vec3(transform_matrix * vec4(-1, 0, 1, 1));
+		__b = vec3(transform_matrix * vec4(1, 0, 1, 1));
+		__c = vec3(transform_matrix * vec4(1, 0, -1, 1));
+		__d = vec3(transform_matrix * vec4(-1, 0, -1, 1));
+
+		__tri_a.update();
+		__tri_b.update();
+
+		__dx = (__c - __d) / float(SHADE_SIZE);
+		__dy = (__a - __d) / float(SHADE_SIZE);
+	}
 
 	inline vec3 calcShade(const Scene *scene_ptr, const vec3 &hit_position, float &shade_idx) const {
 		shade_idx = 0;
-		// Monte Carlo rendering
-		float dx = __width / SHADE_SIZE, dy = __height / SHADE_SIZE;
 
+		// Monte Carlo rendering
 		vec3 total_dir(0);
 		for (size_t i = 0; i < SAMPLES; i ++) {
 			int idx = i % SHADE_SIZE_2;
 			int w_idx = idx / SHADE_SIZE, h_idx = idx % SHADE_SIZE;
-			float w = __min_p[0] + w_idx * dx, h = __min_p[2] + h_idx * dy;
 
-			vec3 lp(w + linearRand(0.0f, dx), __min_p[1], h + linearRand(0.0f, dy) );
+			vec3 lp = (w_idx + linearRand(0.0f, 1.0f)) * __dx + (h_idx + linearRand(0.0f, 1.0f)) * __dy + __d;
 			vec3 hit2light = lp - hit_position;
 			float len = length(hit2light);
 			vec3 hit2light_dir = hit2light / len;
