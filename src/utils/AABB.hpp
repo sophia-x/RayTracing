@@ -12,10 +12,6 @@ public:
 	AABB() {}
 
 	AABB(const vec3 &position, const vec3 &size): __position(position), __size(size) {
-		for (int i = 0; i < 3; i ++) {
-			if (__size[i] < EPSILON)
-				__size[i] += EPSILON;
-		}
 		__half_size = __size / 2.0f;
 		__min_p = __position - __half_size;
 		__max_p = __position + __half_size;

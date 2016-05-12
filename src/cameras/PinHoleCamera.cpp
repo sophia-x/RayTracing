@@ -112,6 +112,7 @@ void PinHoleCamera::render(Mat &result, unsigned short anti_t, size_t thread_num
 	vector<thread> ts(thread_num);
 	mutex mutex_w_h;
 	unsigned short w_t = 0, h_t = 0;
+
 	for (size_t i = 0; i < thread_num; i ++) {
 		ts[i] = thread(thread_pool_1stpass, &mutex_w_h, &w_t, &h_t, width, height, __width_camera_half, __height_camera_half, pixel_size,
 		               __world_position, __camera2world_matrix, &result, &hash_code_mat, __scene_ptr);

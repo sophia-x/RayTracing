@@ -26,21 +26,21 @@ Node::Node(const AABB &box, const vector<size_t> &indexes, const vector<Primitiv
 		if (cost < size * COST_INTERSECT) {
 			leaf = false;
 
-			vector<size_t> left_indexes(left), right_indexes(right);
-			int left_p = 0, right_p = 0;
+			vector<size_t> left_indexes, right_indexes;
+			left_indexes.reserve(left), right_indexes.reserve(right);
 
 			AABB left_box, right_box;
 			splitBox(left_box, right_box, __split_point);
 			for (size_t idx = 0; idx < size; idx ++) {
 				size_t i = indexes[idx];
+				bool in = false;
 				if (min_ps[i][__axis] <= __split_point && primitives[i]->intersect(left_box)) {
-					left_indexes[left_p] = i;
-					left_p ++;
+					in = true;
+					left_indexes.push_back(i);
 				}
 
-				if (max_ps[i][__axis] >= __split_point && primitives[i]->intersect(right_box)) {
-					right_indexes[right_p] = i;
-					right_p ++;
+				if (!in || (max_ps[i][__axis] >= __split_point && primitives[i]->intersect(right_box))) {
+					right_indexes.push_back(i);
 				}
 			}
 
