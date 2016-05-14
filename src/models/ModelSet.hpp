@@ -26,6 +26,11 @@ public:
 			__models[i]->transform(transform_matrix * __trans_mats[i]);
 	}
 
+	void setMat(size_t idx, const mat4 &mat) {
+		if (idx < __trans_mats.size())
+			__trans_mats[idx] = mat;
+	}
+
 	inline void addPrimitives(vector<Primitive *> &primitives) {
 		for (size_t i = 0; i < __models.size(); i++)
 			__models[i]->addPrimitives(primitives);
