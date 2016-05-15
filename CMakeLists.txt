@@ -23,7 +23,7 @@ add_executable(RayTracing ${SRCS})
 
 TARGET_LINK_LIBRARIES(RayTracing ${EXTRA_LIBS})
 
-FILE(GLOB OBJS objs/* textures/*)
+FILE(GLOB OBJS objs/*)
 FILE(COPY ${OBJS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/objs)
 
 FILE(GLOB TEXTURE textures/*)
